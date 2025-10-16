@@ -21,9 +21,9 @@ You can find our project on GitHub by following this link: https://github.com/Sa
 
 ## Authors & Contact
 
-Castets Peïo, peio.castets@efrei.net
-Ras El Qdim Safiane, safiane.raselqdim@efrei.net
-Jin Johnny, johnny.jin@efrei.net
+- Castets Peïo, peio.castets@efrei.net
+- Ras El Qdim Safiane, safiane.raselqdim@efrei.net
+- Jin Johnny, johnny.jin@efrei.net
 
 ## License
 
