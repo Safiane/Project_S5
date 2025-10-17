@@ -23,7 +23,7 @@ You can find our project on GitHub by following this link: https://github.com/Sa
 
 - Castets Peïo, peio.castets@efrei.net
 - Ras El Qdim Safiane, safiane.ras-el-qdim@efrei.net
-- Jin Johnny, jin.johnny@efrei.net
+- Jin Johnny, johnny.jin@efrei.net
 
 ## License
 
