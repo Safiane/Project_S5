@@ -5,9 +5,12 @@
       <div class="hero-content text-center">
         <h1>Feel the Music</h1>
         <p>Where every beat tells a story.</p>
-        <router-link to="/cars" class="btn btn-outline-light btn-discover">
-          Explore Now
-        </router-link>
+
+        <div class="cta-group">
+          <router-link to="/artists" class="btn btn-outline-light btn-discover">Artists</router-link>
+          <router-link to="/albums" class="btn btn-outline-light btn-discover">Albums</router-link>
+          <router-link to="/songs" class="btn btn-outline-light btn-discover">Songs</router-link>
+        </div>
       </div>
     </section>
 
@@ -37,10 +40,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    rgba(0, 0, 0, 0.6),
-    rgba(0, 0, 0, 0.8)
-  );
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
 }
 
 .hero-content {
@@ -61,6 +61,13 @@
   font-size: 1.3rem;
   font-weight: 400;
   margin-bottom: 30px;
+}
+
+.cta-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .btn-discover {

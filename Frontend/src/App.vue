@@ -11,13 +11,14 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <router-link class="nav-link" to="/">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link" to="/cars">Artists</router-link>
+              <router-link class="nav-link" to="/artists">Artists</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" to="/albums">Albums</router-link>
@@ -35,10 +36,6 @@
 </template>
 
 <style>
-body {
-  margin: 0;
-}
-#app {
-  margin-top: 56px;
-}
+body { margin: 0; }
+#app { margin-top: 56px; }
 </style>

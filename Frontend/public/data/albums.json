@@ -1,0 +1,182 @@
+[
+  {
+    "ID_Album": 1,
+    "Album_Title": "Metaphorical Music",
+    "Album_Release_Date": "2003-08-21",
+    "Album_Type": "Hip-Hop/Jazz Rap",
+    "Record_Company": "Hydeout",
+    "Collaborations": null,
+    "ID_Artist": 1
+  },
+  {
+    "ID_Album": 2,
+    "Album_Title": "Modal Soul",
+    "Album_Release_Date": "2005-11-11",
+    "Album_Type": "Hip-Hop/Jazz Rap",
+    "Record_Company": "Hydeout",
+    "Collaborations": null,
+    "ID_Artist": 1
+  },
+  {
+    "ID_Album": 3,
+    "Album_Title": "OK Computer",
+    "Album_Release_Date": "1997-05-21",
+    "Album_Type": "Alternative Rock",
+    "Record_Company": "Parlophone",
+    "Collaborations": null,
+    "ID_Artist": 2
+  },
+  {
+    "ID_Album": 4,
+    "Album_Title": "Kid A",
+    "Album_Release_Date": "2000-10-02",
+    "Album_Type": "Experimental Rock",
+    "Record_Company": "Parlophone",
+    "Collaborations": null,
+    "ID_Artist": 2
+  },
+  {
+    "ID_Album": 5,
+    "Album_Title": "Serrure",
+    "Album_Release_Date": "2023-01-01",
+    "Album_Type": "Rap/Trap",
+    "Record_Company": "Indépendant",
+    "Collaborations": null,
+    "ID_Artist": 3
+  },
+  {
+    "ID_Album": 6,
+    "Album_Title": "Code 404",
+    "Album_Release_Date": "2024-02-15",
+    "Album_Type": "Rap/Trap",
+    "Record_Company": "Indépendant",
+    "Collaborations": null,
+    "ID_Artist": 3
+  },
+  {
+    "ID_Album": 7,
+    "Album_Title": "Long.Live.A$AP",
+    "Album_Release_Date": "2013-01-15",
+    "Album_Type": "Hip-Hop",
+    "Record_Company": "RCA",
+    "Collaborations": null,
+    "ID_Artist": 4
+  },
+  {
+    "ID_Album": 8,
+    "Album_Title": "At.Long.Last.A$AP",
+    "Album_Release_Date": "2015-05-26",
+    "Album_Type": "Hip-Hop",
+    "Record_Company": "RCA",
+    "Collaborations": null,
+    "ID_Artist": 4
+  },
+  {
+    "ID_Album": 9,
+    "Album_Title": "Ateyaba",
+    "Album_Release_Date": "2014-06-02",
+    "Album_Type": "Rap",
+    "Record_Company": "Def Jam",
+    "Collaborations": null,
+    "ID_Artist": 5
+  },
+  {
+    "ID_Album": 10,
+    "Album_Title": "Tokyo",
+    "Album_Release_Date": "2018-05-15",
+    "Album_Type": "Rap",
+    "Record_Company": "Def Jam",
+    "Collaborations": null,
+    "ID_Artist": 5
+  },
+  {
+    "ID_Album": 11,
+    "Album_Title": "Or Noir",
+    "Album_Release_Date": "2013-10-21",
+    "Album_Type": "Rap/Trap",
+    "Record_Company": "Capitol",
+    "Collaborations": null,
+    "ID_Artist": 6
+  },
+  {
+    "ID_Album": 12,
+    "Album_Title": "Dozo",
+    "Album_Release_Date": "2017-11-17",
+    "Album_Type": "Rap/Trap",
+    "Record_Company": "Capitol",
+    "Collaborations": null,
+    "ID_Artist": 6
+  },
+  {
+    "ID_Album": 13,
+    "Album_Title": "Lonerism",
+    "Album_Release_Date": "2012-10-05",
+    "Album_Type": "Psychedelic Rock",
+    "Record_Company": "Modular",
+    "Collaborations": null,
+    "ID_Artist": 7
+  },
+  {
+    "ID_Album": 14,
+    "Album_Title": "Currents",
+    "Album_Release_Date": "2015-07-17",
+    "Album_Type": "Psychedelic Rock",
+    "Record_Company": "Modular",
+    "Collaborations": null,
+    "ID_Artist": 7
+  },
+  {
+    "ID_Album": 15,
+    "Album_Title": "Temps Mort",
+    "Album_Release_Date": "2002-01-22",
+    "Album_Type": "Rap",
+    "Record_Company": "45 Scientific",
+    "Collaborations": null,
+    "ID_Artist": 8
+  },
+  {
+    "ID_Album": 16,
+    "Album_Title": "Trône",
+    "Album_Release_Date": "2017-12-01",
+    "Album_Type": "Rap",
+    "Record_Company": "Tallac Records",
+    "Collaborations": null,
+    "ID_Artist": 8
+  },
+  {
+    "ID_Album": 17,
+    "Album_Title": "good kid, m.A.A.d city",
+    "Album_Release_Date": "2012-10-22",
+    "Album_Type": "Hip-Hop",
+    "Record_Company": "Top Dawg",
+    "Collaborations": null,
+    "ID_Artist": 9
+  },
+  {
+    "ID_Album": 18,
+    "Album_Title": "DAMN.",
+    "Album_Release_Date": "2017-04-14",
+    "Album_Type": "Hip-Hop",
+    "Record_Company": "Top Dawg",
+    "Collaborations": null,
+    "ID_Artist": 9
+  },
+  {
+    "ID_Album": 19,
+    "Album_Title": "Rodeo",
+    "Album_Release_Date": "2015-09-04",
+    "Album_Type": "Hip-Hop",
+    "Record_Company": "Grand Hustle",
+    "Collaborations": null,
+    "ID_Artist": 10
+  },
+  {
+    "ID_Album": 20,
+    "Album_Title": "Astroworld",
+    "Album_Release_Date": "2018-08-03",
+    "Album_Type": "Hip-Hop",
+    "Record_Company": "Cactus Jack",
+    "Collaborations": null,
+    "ID_Artist": 10
+  }
+]
