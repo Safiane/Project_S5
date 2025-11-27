@@ -130,7 +130,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-const BASE = (import.meta?.env?.BASE_URL) || (process?.env?.BASE_URL) || '/'
+// URL du backend
+const API_BASE = 'http://localhost:3000/api'
 
 const q = ref('')
 
@@ -157,12 +158,13 @@ const nextId = computed(() => {
   return Math.max(...songs.value.map(s => s.ID_Song)) + 1
 })
 
+// ========== CHARGEMENT BACKEND ==========
 onMounted(async () => {
   try {
     const [sRes, alRes, aRes] = await Promise.all([
-      fetch(`${BASE}data/songs.json`),
-      fetch(`${BASE}data/albums.json`),
-      fetch(`${BASE}data/artists.json`)
+      fetch(`${API_BASE}/songs`),
+      fetch(`${API_BASE}/albums`),
+      fetch(`${API_BASE}/artists`)
     ])
     if (!sRes.ok || !alRes.ok || !aRes.ok) {
       throw new Error(`HTTP ${sRes.status}/${alRes.status}/${aRes.status}`)
@@ -178,13 +180,18 @@ onMounted(async () => {
   }
 })
 
+// ajouter l'artiste dans l'album
 const albumsWithArtist = computed(() => {
   const byArtist = Object.fromEntries(artists.value.map(a => [a.ID_Artist, a]))
   return albums.value.map(alb => ({ ...alb, artist: byArtist[alb.ID_Artist] }))
 })
 
+// jointure song + album + artist
 const joined = computed(() => {
-  const albumById = Object.fromEntries(albumsWithArtist.value.map(a => [a.ID_Album, a]))
+  const albumById = Object.fromEntries(
+    albumsWithArtist.value.map(a => [a.ID_Album, a])
+  )
+
   return songs.value.map(s => {
     const album = albumById[s.ID_Album]
     const artist = album ? album.artist : null
@@ -192,9 +199,11 @@ const joined = computed(() => {
   })
 })
 
+// recherche
 const filtered = computed(() => {
   const needle = q.value.toLowerCase()
   if (!needle) return joined.value
+
   return joined.value.filter(r =>
     [r.Song_Title, r.album?.Album_Title, r.artist?.Name]
       .join(' ')

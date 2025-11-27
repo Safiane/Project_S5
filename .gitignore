@@ -10,14 +10,8 @@ Thumbs.db
 *.tmp
 *.log
 *.bak
-<<<<<<< HEAD
 
-
-# Ignore backend dependencies
-# Backend
+# Ignore backend dependencies only
 Backend/node_modules/
 Backend/npm-debug.log
 Backend/.env
-=======
-Backend/ 
->>>>>>> main

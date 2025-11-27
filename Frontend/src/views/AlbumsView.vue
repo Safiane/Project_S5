@@ -123,7 +123,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-const BASE = (import.meta?.env?.BASE_URL) || (process?.env?.BASE_URL) || '/'
+// URL de ton backend
+const API_BASE = 'http://localhost:3000/api'
 
 const artists = ref([])
 const albums = ref([])
@@ -147,13 +148,16 @@ const nextId = computed(() => {
   return Math.max(...albums.value.map(a => a.ID_Album)) + 1
 })
 
+// ====== CHARGEMENT depuis le BACKEND ======
 onMounted(async () => {
   try {
     const [aRes, alRes] = await Promise.all([
-      fetch(`${BASE}data/artists.json`),
-      fetch(`${BASE}data/albums.json`)
+      fetch(`${API_BASE}/artists`),
+      fetch(`${API_BASE}/albums`)
     ])
-    if (!aRes.ok || !alRes.ok) throw new Error(`HTTP ${aRes.status}/${alRes.status}`)
+    if (!aRes.ok || !alRes.ok) {
+      throw new Error(`HTTP ${aRes.status}/${alRes.status}`)
+    }
     artists.value = await aRes.json()
     albums.value = await alRes.json()
   } catch (e) {
@@ -164,6 +168,7 @@ onMounted(async () => {
   }
 })
 
+// albums enrichis avec l'artiste correspondant
 const albumsWithArtist = computed(() => {
   const byArtist = Object.fromEntries(artists.value.map(a => [a.ID_Artist, a]))
   return albums.value.map(alb => ({ ...alb, artist: byArtist[alb.ID_Artist] }))

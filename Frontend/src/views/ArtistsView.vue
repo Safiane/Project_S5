@@ -111,7 +111,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-const BASE = (import.meta?.env?.BASE_URL) || (process?.env?.BASE_URL) || '/'
+
+const API_BASE = 'http://localhost:3000/api'
 
 const artists = ref([])
 const loading = ref(true)
@@ -135,7 +136,7 @@ const nextId = computed(() => {
 
 onMounted(async () => {
   try {
-    const res = await fetch(`${BASE}data/artists.json`)
+    const res = await fetch(`${API_BASE}/artists`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const json = await res.json()
     if (!Array.isArray(json)) throw new Error('Unexpected JSON format')
@@ -196,6 +197,7 @@ function viewDetails(artist) {
   selectedArtist.value = { ...artist }
 }
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");
