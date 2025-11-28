@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-const path = require('path')
-const fs = require('fs')
+const mysql = require('mysql2/promise')
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -9,223 +8,340 @@ const PORT = process.env.PORT || 3000
 app.use(express.json())
 app.use(cors())
 
-// dossier des fichiers JSON
-const dataDir = path.join(__dirname, 'data')
-
-const artistsFile = path.join(dataDir, 'artists.json')
-const albumsFile = path.join(dataDir, 'albums.json')
-const songsFile = path.join(dataDir, 'songs.json')
-
-// petites fonctions utilitaires
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-}
-
-function writeJson(filePath, data) {
-  fs.writeFile(filePath, JSON.stringify(data, null, 2), err => {
-    if (err) {
-      console.error('Error writing', filePath, err)
-    }
-  })
-}
-
-// données en mémoire
-let artists = readJson(artistsFile)
-let albums = readJson(albumsFile)
-let songs = readJson(songsFile)
-
-// ========== ARTISTS ==========
-
-app.get('/api/artists', (req, res) => {
-  res.json(artists)
+// ====== CONNEXION MYSQL ======
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',      // <-- adapte à ta config
+  password: 'Safianou!2906',      // <-- adapte à ta config
+  database: 'music_db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 })
 
-app.post('/api/artists', (req, res) => {
-  const body = req.body
-  if (!body.Name) {
+// ===========================
+// ARTISTS CRUD
+// ===========================
+
+// GET all artists
+app.get('/api/artists', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM Artist')
+    res.json(rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error fetching artists' })
+  }
+})
+
+// POST create artist
+app.post('/api/artists', async (req, res) => {
+  const { Name, Style, Country, Gender, Start_Date } = req.body
+  if (!Name) {
     return res.status(400).json({ message: 'Name is required' })
   }
 
-  const nextId =
-    artists.length === 0
-      ? 1
-      : Math.max(...artists.map(a => a.ID_Artist)) + 1
+  try {
+    const [result] = await pool.query(
+      `INSERT INTO Artist (Name, Style, Country, Gender, Start_Date)
+       VALUES (?, ?, ?, ?, ?)`,
+      [Name, Style || null, Country || null, Gender || null, Start_Date || null]
+    )
 
-  const artist = {
-    ID_Artist: nextId,
-    Name: body.Name,
-    Style: body.Style || '',
-    Country: body.Country || '',
-    Gender: body.Gender || '',
-    Start_Date: body.Start_Date || ''
+    res.status(201).json({
+      ID_Artist: result.insertId,
+      Name,
+      Style: Style || null,
+      Country: Country || null,
+      Gender: Gender || null,
+      Start_Date: Start_Date || null
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error creating artist' })
   }
-
-  artists.push(artist)
-  writeJson(artistsFile, artists)
-  res.status(201).json(artist)
 })
 
-app.put('/api/artists/:id', (req, res) => {
+// PUT update artist
+app.put('/api/artists/:id', async (req, res) => {
   const id = Number(req.params.id)
-  const idx = artists.findIndex(a => a.ID_Artist === id)
-  if (idx === -1) {
-    return res.status(404).json({ message: 'Artist not found' })
-  }
+  const { Name, Style, Country, Gender, Start_Date } = req.body
 
-  const body = req.body
-  const updated = {
-    ...artists[idx],
-    ...body,
-    ID_Artist: artists[idx].ID_Artist
-  }
+  try {
+    const [result] = await pool.query(
+      `UPDATE Artist
+       SET Name = ?, Style = ?, Country = ?, Gender = ?, Start_Date = ?
+       WHERE ID_Artist = ?`,
+      [Name, Style || null, Country || null, Gender || null, Start_Date || null, id]
+    )
 
-  artists[idx] = updated
-  writeJson(artistsFile, artists)
-  res.json(updated)
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Artist not found' })
+    }
+
+    res.json({
+      ID_Artist: id,
+      Name,
+      Style: Style || null,
+      Country: Country || null,
+      Gender: Gender || null,
+      Start_Date: Start_Date || null
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error updating artist' })
+  }
 })
 
-app.delete('/api/artists/:id', (req, res) => {
+// DELETE artist
+app.delete('/api/artists/:id', async (req, res) => {
   const id = Number(req.params.id)
-  const idx = artists.findIndex(a => a.ID_Artist === id)
-  if (idx === -1) {
-    return res.status(404).json({ message: 'Artist not found' })
-  }
+  try {
+    const [result] = await pool.query(
+      'DELETE FROM Artist WHERE ID_Artist = ?',
+      [id]
+    )
 
-  artists.splice(idx, 1)
-  writeJson(artistsFile, artists)
-  res.status(204).end()
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Artist not found' })
+    }
+
+    res.status(204).end()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error deleting artist' })
+  }
 })
 
-// ========== SONGS ==========
+// ===========================
+// ALBUMS CRUD
+// ===========================
 
-app.get('/api/songs', (req, res) => {
-  res.json(songs)
+// GET all albums
+app.get('/api/albums', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM Album')
+    res.json(rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error fetching albums' })
+  }
 })
 
-app.post('/api/songs', (req, res) => {
-  const body = req.body
-  if (!body.Song_Title || !body.ID_Album) {
-    return res.status(400).json({ message: 'Song_Title and ID_Album are required' })
-  }
-
-  const nextId =
-    songs.length === 0
-      ? 1
-      : Math.max(...songs.map(s => s.ID_Song)) + 1
-
-  const song = {
-    ID_Song: nextId,
-    Song_Title: body.Song_Title,
-    Song_Release_Date: body.Song_Release_Date || '',
-    Duration: body.Duration || '',
-    Language: body.Language || '',
-    Nb_Listening: Number(body.Nb_Listening) || 0,
-    ID_Album: Number(body.ID_Album)
-  }
-
-  songs.push(song)
-  writeJson(songsFile, songs)
-  res.status(201).json(song)
-})
-
-app.put('/api/songs/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const idx = songs.findIndex(s => s.ID_Song === id)
-  if (idx === -1) {
-    return res.status(404).json({ message: 'Song not found' })
-  }
-
-  const body = req.body
-  const updated = {
-    ...songs[idx],
-    ...body,
-    ID_Song: songs[idx].ID_Song,
-    Nb_Listening: Number(body.Nb_Listening ?? songs[idx].Nb_Listening),
-    ID_Album: Number(body.ID_Album ?? songs[idx].ID_Album)
-  }
-
-  songs[idx] = updated
-  writeJson(songsFile, songs)
-  res.json(updated)
-})
-
-app.delete('/api/songs/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const idx = songs.findIndex(s => s.ID_Song === id)
-  if (idx === -1) {
-    return res.status(404).json({ message: 'Song not found' })
-  }
-
-  songs.splice(idx, 1)
-  writeJson(songsFile, songs)
-  res.status(204).end()
-})
-
-// ========== ALBUMS ==========
-
-app.get('/api/albums', (req, res) => {
-  res.json(albums)
-})
-
-app.post('/api/albums', (req, res) => {
-  const body = req.body
-  if (!body.Album_Title || !body.ID_Artist) {
+// POST create album
+app.post('/api/albums', async (req, res) => {
+  const { Album_Title, Album_Release_Date, Album_Type, Record_Company, Collaborations, ID_Artist } = req.body
+  if (!Album_Title || !ID_Artist) {
     return res.status(400).json({ message: 'Album_Title and ID_Artist are required' })
   }
 
-  const nextId =
-    albums.length === 0
-      ? 1
-      : Math.max(...albums.map(a => a.ID_Album)) + 1
+  try {
+    const [result] = await pool.query(
+      `INSERT INTO Album
+       (Album_Title, Album_Release_Date, Album_Type, Record_Company, Collaborations, ID_Artist)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        Album_Title,
+        Album_Release_Date || null,
+        Album_Type || null,
+        Record_Company || null,
+        Collaborations || null,
+        ID_Artist
+      ]
+    )
 
-  const album = {
-    ID_Album: nextId,
-    Album_Title: body.Album_Title,
-    Album_Release_Date: body.Album_Release_Date || '',
-    Nb_Songs: Number(body.Nb_Songs) || 0,
-    ID_Artist: Number(body.ID_Artist)
+    res.status(201).json({
+      ID_Album: result.insertId,
+      Album_Title,
+      Album_Release_Date: Album_Release_Date || null,
+      Album_Type: Album_Type || null,
+      Record_Company: Record_Company || null,
+      Collaborations: Collaborations || null,
+      ID_Artist
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error creating album' })
   }
-
-  albums.push(album)
-  writeJson(albumsFile, albums)
-  res.status(201).json(album)
 })
 
-app.put('/api/albums/:id', (req, res) => {
+// PUT update album
+app.put('/api/albums/:id', async (req, res) => {
   const id = Number(req.params.id)
-  const idx = albums.findIndex(a => a.ID_Album === id)
-  if (idx === -1) {
-    return res.status(404).json({ message: 'Album not found' })
-  }
+  const { Album_Title, Album_Release_Date, Album_Type, Record_Company, Collaborations, ID_Artist } = req.body
 
-  const body = req.body
-  const updated = {
-    ...albums[idx],
-    ...body,
-    ID_Album: albums[idx].ID_Album,
-    Nb_Songs: Number(body.Nb_Songs ?? albums[idx].Nb_Songs),
-    ID_Artist: Number(body.ID_Artist ?? albums[idx].ID_Artist)
-  }
+  try {
+    const [result] = await pool.query(
+      `UPDATE Album
+       SET Album_Title = ?, Album_Release_Date = ?, Album_Type = ?,
+           Record_Company = ?, Collaborations = ?, ID_Artist = ?
+       WHERE ID_Album = ?`,
+      [
+        Album_Title,
+        Album_Release_Date || null,
+        Album_Type || null,
+        Record_Company || null,
+        Collaborations || null,
+        ID_Artist,
+        id
+      ]
+    )
 
-  albums[idx] = updated
-  writeJson(albumsFile, albums)
-  res.json(updated)
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Album not found' })
+    }
+
+    res.json({
+      ID_Album: id,
+      Album_Title,
+      Album_Release_Date: Album_Release_Date || null,
+      Album_Type: Album_Type || null,
+      Record_Company: Record_Company || null,
+      Collaborations: Collaborations || null,
+      ID_Artist
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error updating album' })
+  }
 })
 
-app.delete('/api/albums/:id', (req, res) => {
+// DELETE album
+app.delete('/api/albums/:id', async (req, res) => {
   const id = Number(req.params.id)
-  const idx = albums.findIndex(a => a.ID_Album === id)
-  if (idx === -1) {
-    return res.status(404).json({ message: 'Album not found' })
-  }
+  try {
+    const [result] = await pool.query(
+      'DELETE FROM Album WHERE ID_Album = ?',
+      [id]
+    )
 
-  albums.splice(idx, 1)
-  writeJson(albumsFile, albums)
-  res.status(204).end()
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Album not found' })
+    }
+
+    res.status(204).end()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error deleting album' })
+  }
 })
 
-// ========== START SERVER ==========
+// ===========================
+// SONGS CRUD
+// ===========================
 
+// GET all songs
+app.get('/api/songs', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM Song')
+    res.json(rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error fetching songs' })
+  }
+})
+
+// POST create song
+app.post('/api/songs', async (req, res) => {
+  const { Song_Title, Song_Release_Date, Duration, Language, Nb_Listening, ID_Album } = req.body
+  if (!Song_Title || !ID_Album) {
+    return res.status(400).json({ message: 'Song_Title and ID_Album are required' })
+  }
+
+  try {
+    const [result] = await pool.query(
+      `INSERT INTO Song
+       (Song_Title, Song_Release_Date, Duration, Language, Nb_Listening, ID_Album)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        Song_Title,
+        Song_Release_Date || null,
+        Duration || null,
+        Language || null,
+        Nb_Listening || 0,
+        ID_Album
+      ]
+    )
+
+    res.status(201).json({
+      ID_Song: result.insertId,
+      Song_Title,
+      Song_Release_Date: Song_Release_Date || null,
+      Duration: Duration || null,
+      Language: Language || null,
+      Nb_Listening: Nb_Listening || 0,
+      ID_Album
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error creating song' })
+  }
+})
+
+// PUT update song
+app.put('/api/songs/:id', async (req, res) => {
+  const id = Number(req.params.id)
+  const { Song_Title, Song_Release_Date, Duration, Language, Nb_Listening, ID_Album } = req.body
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE Song
+       SET Song_Title = ?, Song_Release_Date = ?, Duration = ?, Language = ?,
+           Nb_Listening = ?, ID_Album = ?
+       WHERE ID_Song = ?`,
+      [
+        Song_Title,
+        Song_Release_Date || null,
+        Duration || null,
+        Language || null,
+        Nb_Listening || 0,
+        ID_Album,
+        id
+      ]
+    )
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Song not found' })
+    }
+
+    res.json({
+      ID_Song: id,
+      Song_Title,
+      Song_Release_Date: Song_Release_Date || null,
+      Duration: Duration || null,
+      Language: Language || null,
+      Nb_Listening: Nb_Listening || 0,
+      ID_Album
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error updating song' })
+  }
+})
+
+// DELETE song
+app.delete('/api/songs/:id', async (req, res) => {
+  const id = Number(req.params.id)
+  try {
+    const [result] = await pool.query(
+      'DELETE FROM Song WHERE ID_Song = ?',
+      [id]
+    )
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Song not found' })
+    }
+
+    res.status(204).end()
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ message: 'Error deleting song' })
+  }
+})
+
+// ===========================
+// START SERVER
+// ===========================
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`)
 })

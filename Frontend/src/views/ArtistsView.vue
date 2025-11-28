@@ -133,15 +133,9 @@ const nextId = computed(() => {
   return Math.max(...artists.value.map(a => a.ID_Artist)) + 1
 })
 
-// chargement initial
-onMounted(async () => {
-  await loadArtists()
-})
-
-async function loadArtists() {
+async function loadArtists () {
   loading.value = true
   error.value = ''
-
   try {
     const res = await fetch(`${API_BASE}/artists`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -156,7 +150,9 @@ async function loadArtists() {
   }
 }
 
-function resetForm() {
+onMounted(loadArtists)
+
+function resetForm () {
   form.value = {
     ID_Artist: null,
     Name: '',
@@ -168,92 +164,42 @@ function resetForm() {
   isEditing.value = false
 }
 
-// CREATE / UPDATE
-async function submitForm() {
+function submitForm () {
   if (!form.value.Name) return
 
-  error.value = ''
-
-  try {
-    if (isEditing.value) {
-      // UPDATE → PUT /api/artists/:id
-      const res = await fetch(`${API_BASE}/artists/${form.value.ID_Artist}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form.value)
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const updated = await res.json()
-
-      const idx = artists.value.findIndex(a => a.ID_Artist === updated.ID_Artist)
-      if (idx !== -1) {
-        artists.value[idx] = updated
-      }
-    } else {
-      // CREATE → POST /api/artists
-      const payload = { ...form.value }
-      // l’ID sera généré par le serveur, mais on garde un fallback
-      if (!payload.ID_Artist) {
-        payload.ID_Artist = nextId.value
-      }
-
-      const res = await fetch(`${API_BASE}/artists`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const created = await res.json()
-      artists.value.push(created)
+  if (isEditing.value) {
+    const idx = artists.value.findIndex(a => a.ID_Artist === form.value.ID_Artist)
+    if (idx !== -1) {
+      artists.value[idx] = { ...form.value }
     }
-
-    resetForm()
-  } catch (e) {
-    error.value = `Unable to save artist (${e.message})`
-    console.error(e)
+  } else {
+    const artist = { ...form.value, ID_Artist: nextId.value }
+    artists.value.push(artist)
   }
+
+  resetForm()
 }
 
-function startEdit(artist) {
+function startEdit (artist) {
   isEditing.value = true
   form.value = { ...artist }
 }
 
-function cancelEdit() {
+function cancelEdit () {
   resetForm()
 }
 
-async function deleteArtist(id) {
-  const confirmDelete = window.confirm('Delete this artist ?')
-  if (!confirmDelete) return
-
-  error.value = ''
-
-  try {
-    const res = await fetch(`${API_BASE}/artists/${id}`, {
-      method: 'DELETE'
-    })
-    if (!res.ok && res.status !== 204) {
-      throw new Error(`HTTP ${res.status}`)
-    }
-
-    artists.value = artists.value.filter(a => a.ID_Artist !== id)
-
-    if (selectedArtist.value && selectedArtist.value.ID_Artist === id) {
-      selectedArtist.value = null
-    }
-  } catch (e) {
-    error.value = `Unable to delete artist (${e.message})`
-    console.error(e)
+function deleteArtist (id) {
+  artists.value = artists.value.filter(a => a.ID_Artist !== id)
+  if (selectedArtist.value && selectedArtist.value.ID_Artist === id) {
+    selectedArtist.value = null
   }
 }
 
-function viewDetails(artist) {
+function viewDetails (artist) {
   selectedArtist.value = { ...artist }
 }
 </script>
-
-
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");

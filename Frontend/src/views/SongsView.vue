@@ -22,7 +22,7 @@
       <p v-else-if="error" class="error">{{ error }}</p>
 
       <div v-else class="layout">
-        <!-- CREATE / EDIT FORM -->
+        <!-- FORM -->
         <section class="card form-card">
           <h3>{{ isEditing ? 'Edit song' : 'Create new song' }}</h3>
 
@@ -157,8 +157,9 @@ const nextId = computed(() => {
   return Math.max(...songs.value.map(s => s.ID_Song)) + 1
 })
 
-// ========== CHARGEMENT BACKEND ==========
-onMounted(async () => {
+async function loadData () {
+  loading.value = true
+  error.value = ''
   try {
     const [sRes, alRes, aRes] = await Promise.all([
       fetch(`${API_BASE}/songs`),
@@ -177,20 +178,17 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
 
-// ajouter l'artiste dans l'album
+onMounted(loadData)
+
 const albumsWithArtist = computed(() => {
   const byArtist = Object.fromEntries(artists.value.map(a => [a.ID_Artist, a]))
   return albums.value.map(alb => ({ ...alb, artist: byArtist[alb.ID_Artist] }))
 })
 
-// jointure song + album + artist
 const joined = computed(() => {
-  const albumById = Object.fromEntries(
-    albumsWithArtist.value.map(a => [a.ID_Album, a])
-  )
-
+  const albumById = Object.fromEntries(albumsWithArtist.value.map(a => [a.ID_Album, a]))
   return songs.value.map(s => {
     const album = albumById[s.ID_Album]
     const artist = album ? album.artist : null
@@ -198,7 +196,6 @@ const joined = computed(() => {
   })
 })
 
-// recherche
 const filtered = computed(() => {
   const needle = q.value.toLowerCase()
   if (!needle) return joined.value
@@ -211,7 +208,7 @@ const filtered = computed(() => {
   )
 })
 
-function resetForm() {
+function resetForm () {
   form.value = {
     ID_Song: null,
     Song_Title: '',
@@ -224,57 +221,29 @@ function resetForm() {
   isEditing.value = false
 }
 
-// CREATE / UPDATE
-async function submitForm() {
+function submitForm () {
   if (!form.value.Song_Title || !form.value.ID_Album) return
 
-  error.value = ''
-
-  const payload = {
+  const normalized = {
     ...form.value,
     Nb_Listening: Number(form.value.Nb_Listening) || 0,
     ID_Album: Number(form.value.ID_Album)
   }
 
-  try {
-    if (isEditing.value) {
-      // UPDATE → PUT /api/songs/:id
-      const res = await fetch(`${API_BASE}/songs/${form.value.ID_Song}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const updated = await res.json()
-
-      const idx = songs.value.findIndex(s => s.ID_Song === updated.ID_Song)
-      if (idx !== -1) {
-        songs.value[idx] = updated
-      }
-    } else {
-      // CREATE → POST /api/songs
-      if (!payload.ID_Song) {
-        payload.ID_Song = nextId.value
-      }
-
-      const res = await fetch(`${API_BASE}/songs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const created = await res.json()
-      songs.value.push(created)
+  if (isEditing.value) {
+    const idx = songs.value.findIndex(s => s.ID_Song === form.value.ID_Song)
+    if (idx !== -1) {
+      songs.value[idx] = { ...normalized }
     }
-
-    resetForm()
-  } catch (e) {
-    error.value = `Unable to save song (${e.message})`
-    console.error(e)
+  } else {
+    const song = { ...normalized, ID_Song: nextId.value }
+    songs.value.push(song)
   }
+
+  resetForm()
 }
 
-function startEdit(row) {
+function startEdit (row) {
   isEditing.value = true
   form.value = {
     ID_Song: row.ID_Song,
@@ -287,39 +256,21 @@ function startEdit(row) {
   }
 }
 
-function cancelEdit() {
+function cancelEdit () {
   resetForm()
 }
 
-async function deleteSong(id) {
-  const confirmDelete = window.confirm('Delete this song ?')
-  if (!confirmDelete) return
-
-  error.value = ''
-
-  try {
-    const res = await fetch(`${API_BASE}/songs/${id}`, {
-      method: 'DELETE'
-    })
-    if (!res.ok && res.status !== 204) {
-      throw new Error(`HTTP ${res.status}`)
-    }
-
-    songs.value = songs.value.filter(s => s.ID_Song !== id)
-    if (selectedSong.value && selectedSong.value.ID_Song === id) {
-      selectedSong.value = null
-    }
-  } catch (e) {
-    error.value = `Unable to delete song (${e.message})`
-    console.error(e)
+function deleteSong (id) {
+  songs.value = songs.value.filter(s => s.ID_Song !== id)
+  if (selectedSong.value && selectedSong.value.ID_Song === id) {
+    selectedSong.value = null
   }
 }
 
-function viewDetails(row) {
+function viewDetails (row) {
   selectedSong.value = { ...row }
 }
 </script>
-
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");
