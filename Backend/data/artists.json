@@ -16,14 +16,6 @@
     "Start_Date": "1985-01-01"
   },
   {
-    "ID_Artist": 3,
-    "Name": "La Rvfleuze",
-    "Style": "Rap/Trap",
-    "Country": "France",
-    "Gender": null,
-    "Start_Date": "2020-01-01"
-  },
-  {
     "ID_Artist": 4,
     "Name": "A$AP Rocky",
     "Style": "Hip-Hop",
@@ -78,5 +70,21 @@
     "Country": "USA",
     "Gender": "Male",
     "Start_Date": "2012-01-01"
+  },
+  {
+    "ID_Artist": 11,
+    "Name": "New Artist",
+    "Style": "Jazz",
+    "Country": "USA",
+    "Gender": "M",
+    "Start_Date": "2020-01-01"
+  },
+  {
+    "ID_Artist": 12,
+    "Name": "La Rvfleuze",
+    "Style": "Rap/Trap",
+    "Country": "France",
+    "Gender": "Male",
+    "Start_Date": "2020-01-01"
   }
 ]

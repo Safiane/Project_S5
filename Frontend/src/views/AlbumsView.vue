@@ -4,7 +4,7 @@
       <div class="overlay"></div>
       <div class="hero-content text-center">
         <h1>Albums</h1>
-        <p>Discography across genres and years.</p>
+        <p>Explore albums and their creators.</p>
         <div class="cta-group">
           <router-link to="/" class="btn btn-outline-light btn-discover">Home</router-link>
           <router-link to="/artists" class="btn btn-outline-light btn-discover">Artists</router-link>
@@ -18,7 +18,7 @@
       <p v-else-if="error" class="error">{{ error }}</p>
 
       <div v-else class="layout">
-        <!-- CREATE / EDIT FORM -->
+        <!-- FORM -->
         <section class="card form-card">
           <h3>{{ isEditing ? 'Edit album' : 'Create new album' }}</h3>
 
@@ -32,12 +32,8 @@
               <input v-model="form.Album_Release_Date" type="date" />
             </div>
             <div class="form-row">
-              <label>Type</label>
-              <input v-model="form.Album_Type" />
-            </div>
-            <div class="form-row">
-              <label>Record company</label>
-              <input v-model="form.Record_Company" />
+              <label>Number of songs</label>
+              <input v-model.number="form.Nb_Songs" type="number" min="0" />
             </div>
             <div class="form-row">
               <label>Artist</label>
@@ -47,10 +43,6 @@
                   {{ a.Name }}
                 </option>
               </select>
-            </div>
-            <div class="form-row">
-              <label>Collaborations (optional)</label>
-              <input v-model="form.Collaborations" />
             </div>
 
             <div class="buttons">
@@ -69,7 +61,7 @@
           </form>
         </section>
 
-        <!-- LIST -->
+        <!-- LISTE -->
         <section class="card list-card">
           <h3>Album list</h3>
           <table class="table">
@@ -78,8 +70,7 @@
                 <th>ID</th>
                 <th>Album</th>
                 <th>Artist</th>
-                <th>Type</th>
-                <th>Release</th>
+                <th>Nb songs</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -88,8 +79,7 @@
                 <td>{{ alb.ID_Album }}</td>
                 <td>{{ alb.Album_Title }}</td>
                 <td>{{ alb.artist?.Name || '—' }}</td>
-                <td>{{ alb.Album_Type }}</td>
-                <td>{{ alb.Album_Release_Date }}</td>
+                <td>{{ alb.Nb_Songs }}</td>
                 <td class="actions">
                   <button @click="viewDetails(alb)">View</button>
                   <button @click="startEdit(alb)">Edit</button>
@@ -97,22 +87,20 @@
                 </td>
               </tr>
               <tr v-if="albums.length === 0">
-                <td colspan="6" class="muted">No albums yet.</td>
+                <td colspan="5" class="muted">No albums yet.</td>
               </tr>
             </tbody>
           </table>
         </section>
 
-        <!-- DATASHEET -->
+        <!-- DETAILS -->
         <section v-if="selectedAlbum" class="card details-card">
           <h3>Album details</h3>
           <p><strong>ID:</strong> {{ selectedAlbum.ID_Album }}</p>
           <p><strong>Title:</strong> {{ selectedAlbum.Album_Title }}</p>
           <p><strong>Artist:</strong> {{ selectedAlbum.artist?.Name || '—' }}</p>
           <p><strong>Release date:</strong> {{ selectedAlbum.Album_Release_Date || '—' }}</p>
-          <p><strong>Type:</strong> {{ selectedAlbum.Album_Type || '—' }}</p>
-          <p><strong>Record company:</strong> {{ selectedAlbum.Record_Company || '—' }}</p>
-          <p><strong>Collaborations:</strong> {{ selectedAlbum.Collaborations || '—' }}</p>
+          <p><strong>Nb songs:</strong> {{ selectedAlbum.Nb_Songs }}</p>
           <button @click="selectedAlbum = null">Close</button>
         </section>
       </div>
@@ -123,11 +111,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-// URL de ton backend
 const API_BASE = 'http://localhost:3000/api'
 
-const artists = ref([])
 const albums = ref([])
+const artists = ref([])
 const loading = ref(true)
 const error = ref('')
 
@@ -137,9 +124,7 @@ const form = ref({
   ID_Album: null,
   Album_Title: '',
   Album_Release_Date: '',
-  Album_Type: '',
-  Record_Company: '',
-  Collaborations: '',
+  Nb_Songs: 0,
   ID_Artist: ''
 })
 
@@ -148,18 +133,17 @@ const nextId = computed(() => {
   return Math.max(...albums.value.map(a => a.ID_Album)) + 1
 })
 
-// ====== CHARGEMENT depuis le BACKEND ======
 onMounted(async () => {
   try {
-    const [aRes, alRes] = await Promise.all([
-      fetch(`${API_BASE}/artists`),
-      fetch(`${API_BASE}/albums`)
+    const [alRes, aRes] = await Promise.all([
+      fetch(`${API_BASE}/albums`),
+      fetch(`${API_BASE}/artists`)
     ])
-    if (!aRes.ok || !alRes.ok) {
-      throw new Error(`HTTP ${aRes.status}/${alRes.status}`)
+    if (!alRes.ok || !aRes.ok) {
+      throw new Error(`HTTP ${alRes.status}/${aRes.status}`)
     }
-    artists.value = await aRes.json()
     albums.value = await alRes.json()
+    artists.value = await aRes.json()
   } catch (e) {
     error.value = `Unable to load albums (${e.message})`
     console.error(e)
@@ -168,10 +152,13 @@ onMounted(async () => {
   }
 })
 
-// albums enrichis avec l'artiste correspondant
+// jointure album + artist
 const albumsWithArtist = computed(() => {
   const byArtist = Object.fromEntries(artists.value.map(a => [a.ID_Artist, a]))
-  return albums.value.map(alb => ({ ...alb, artist: byArtist[alb.ID_Artist] }))
+  return albums.value.map(alb => ({
+    ...alb,
+    artist: byArtist[alb.ID_Artist]
+  }))
 })
 
 function resetForm() {
@@ -179,54 +166,108 @@ function resetForm() {
     ID_Album: null,
     Album_Title: '',
     Album_Release_Date: '',
-    Album_Type: '',
-    Record_Company: '',
-    Collaborations: '',
+    Nb_Songs: 0,
     ID_Artist: ''
   }
   isEditing.value = false
 }
 
-function submitForm() {
+async function submitForm() {
   if (!form.value.Album_Title || !form.value.ID_Artist) return
 
-  if (isEditing.value) {
-    const idx = albums.value.findIndex(a => a.ID_Album === form.value.ID_Album)
-    if (idx !== -1) {
-      albums.value[idx] = { ...form.value }
-    }
-  } else {
-    const album = { ...form.value, ID_Album: nextId.value }
-    albums.value.push(album)
+  error.value = ''
+
+  const payload = {
+    ...form.value,
+    Nb_Songs: Number(form.value.Nb_Songs) || 0,
+    ID_Artist: Number(form.value.ID_Artist)
   }
 
-  resetForm()
+  try {
+    if (isEditing.value) {
+      // UPDATE
+      const res = await fetch(`${API_BASE}/albums/${form.value.ID_Album}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const updated = await res.json()
+
+      const idx = albums.value.findIndex(a => a.ID_Album === updated.ID_Album)
+      if (idx !== -1) {
+        albums.value[idx] = updated
+      }
+    } else {
+      // CREATE
+      if (!payload.ID_Album) {
+        payload.ID_Album = nextId.value
+      }
+
+      const res = await fetch(`${API_BASE}/albums`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const created = await res.json()
+      albums.value.push(created)
+    }
+
+    resetForm()
+  } catch (e) {
+    error.value = `Unable to save album (${e.message})`
+    console.error(e)
+  }
 }
 
-function startEdit(album) {
+function startEdit(alb) {
   isEditing.value = true
-  form.value = { ...album }
+  form.value = {
+    ID_Album: alb.ID_Album,
+    Album_Title: alb.Album_Title,
+    Album_Release_Date: alb.Album_Release_Date,
+    Nb_Songs: alb.Nb_Songs,
+    ID_Artist: alb.ID_Artist
+  }
 }
 
 function cancelEdit() {
   resetForm()
 }
 
-function deleteAlbum(id) {
-  albums.value = albums.value.filter(a => a.ID_Album !== id)
-  if (selectedAlbum.value && selectedAlbum.value.ID_Album === id) {
-    selectedAlbum.value = null
+async function deleteAlbum(id) {
+  const confirmDelete = window.confirm('Delete this album ?')
+  if (!confirmDelete) return
+
+  error.value = ''
+
+  try {
+    const res = await fetch(`${API_BASE}/albums/${id}`, {
+      method: 'DELETE'
+    })
+    if (!res.ok && res.status !== 204) {
+      throw new Error(`HTTP ${res.status}`)
+    }
+
+    albums.value = albums.value.filter(a => a.ID_Album !== id)
+    if (selectedAlbum.value && selectedAlbum.value.ID_Album === id) {
+      selectedAlbum.value = null
+    }
+  } catch (e) {
+    error.value = `Unable to delete album (${e.message})`
+    console.error(e)
   }
 }
 
-function viewDetails(album) {
-  selectedAlbum.value = { ...album }
+function viewDetails(alb) {
+  selectedAlbum.value = { ...alb }
 }
 </script>
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");
-.hero{position:relative;background:url("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1600&q=80") no-repeat center/cover;height:40vh;display:flex;align-items:center;justify-content:center;text-align:center}
+.hero{position:relative;background:url("https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1600&q=80") no-repeat center/cover;height:40vh;display:flex;align-items:center;justify-content:center;text-align:center}
 .overlay{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.8))}
 .hero-content{position:relative;z-index:2}
 .hero h1{font-family:"Playfair Display",serif;font-size:3rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}

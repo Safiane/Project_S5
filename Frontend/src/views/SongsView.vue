@@ -130,7 +130,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-// URL du backend
 const API_BASE = 'http://localhost:3000/api'
 
 const q = ref('')
@@ -225,26 +224,54 @@ function resetForm() {
   isEditing.value = false
 }
 
-function submitForm() {
+// CREATE / UPDATE
+async function submitForm() {
   if (!form.value.Song_Title || !form.value.ID_Album) return
 
-  const normalized = {
+  error.value = ''
+
+  const payload = {
     ...form.value,
     Nb_Listening: Number(form.value.Nb_Listening) || 0,
     ID_Album: Number(form.value.ID_Album)
   }
 
-  if (isEditing.value) {
-    const idx = songs.value.findIndex(s => s.ID_Song === form.value.ID_Song)
-    if (idx !== -1) {
-      songs.value[idx] = { ...normalized }
-    }
-  } else {
-    const song = { ...normalized, ID_Song: nextId.value }
-    songs.value.push(song)
-  }
+  try {
+    if (isEditing.value) {
+      // UPDATE → PUT /api/songs/:id
+      const res = await fetch(`${API_BASE}/songs/${form.value.ID_Song}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const updated = await res.json()
 
-  resetForm()
+      const idx = songs.value.findIndex(s => s.ID_Song === updated.ID_Song)
+      if (idx !== -1) {
+        songs.value[idx] = updated
+      }
+    } else {
+      // CREATE → POST /api/songs
+      if (!payload.ID_Song) {
+        payload.ID_Song = nextId.value
+      }
+
+      const res = await fetch(`${API_BASE}/songs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const created = await res.json()
+      songs.value.push(created)
+    }
+
+    resetForm()
+  } catch (e) {
+    error.value = `Unable to save song (${e.message})`
+    console.error(e)
+  }
 }
 
 function startEdit(row) {
@@ -264,10 +291,27 @@ function cancelEdit() {
   resetForm()
 }
 
-function deleteSong(id) {
-  songs.value = songs.value.filter(s => s.ID_Song !== id)
-  if (selectedSong.value && selectedSong.value.ID_Song === id) {
-    selectedSong.value = null
+async function deleteSong(id) {
+  const confirmDelete = window.confirm('Delete this song ?')
+  if (!confirmDelete) return
+
+  error.value = ''
+
+  try {
+    const res = await fetch(`${API_BASE}/songs/${id}`, {
+      method: 'DELETE'
+    })
+    if (!res.ok && res.status !== 204) {
+      throw new Error(`HTTP ${res.status}`)
+    }
+
+    songs.value = songs.value.filter(s => s.ID_Song !== id)
+    if (selectedSong.value && selectedSong.value.ID_Song === id) {
+      selectedSong.value = null
+    }
+  } catch (e) {
+    error.value = `Unable to delete song (${e.message})`
+    console.error(e)
   }
 }
 
@@ -275,6 +319,7 @@ function viewDetails(row) {
   selectedSong.value = { ...row }
 }
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");

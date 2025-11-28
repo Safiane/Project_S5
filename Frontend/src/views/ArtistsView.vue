@@ -111,7 +111,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-
 const API_BASE = 'http://localhost:3000/api'
 
 const artists = ref([])
@@ -134,7 +133,15 @@ const nextId = computed(() => {
   return Math.max(...artists.value.map(a => a.ID_Artist)) + 1
 })
 
+// chargement initial
 onMounted(async () => {
+  await loadArtists()
+})
+
+async function loadArtists() {
+  loading.value = true
+  error.value = ''
+
   try {
     const res = await fetch(`${API_BASE}/artists`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -147,7 +154,7 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
 
 function resetForm() {
   form.value = {
@@ -161,20 +168,50 @@ function resetForm() {
   isEditing.value = false
 }
 
-function submitForm() {
+// CREATE / UPDATE
+async function submitForm() {
   if (!form.value.Name) return
 
-  if (isEditing.value) {
-    const idx = artists.value.findIndex(a => a.ID_Artist === form.value.ID_Artist)
-    if (idx !== -1) {
-      artists.value[idx] = { ...form.value }
-    }
-  } else {
-    const artist = { ...form.value, ID_Artist: nextId.value }
-    artists.value.push(artist)
-  }
+  error.value = ''
 
-  resetForm()
+  try {
+    if (isEditing.value) {
+      // UPDATE → PUT /api/artists/:id
+      const res = await fetch(`${API_BASE}/artists/${form.value.ID_Artist}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form.value)
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const updated = await res.json()
+
+      const idx = artists.value.findIndex(a => a.ID_Artist === updated.ID_Artist)
+      if (idx !== -1) {
+        artists.value[idx] = updated
+      }
+    } else {
+      // CREATE → POST /api/artists
+      const payload = { ...form.value }
+      // l’ID sera généré par le serveur, mais on garde un fallback
+      if (!payload.ID_Artist) {
+        payload.ID_Artist = nextId.value
+      }
+
+      const res = await fetch(`${API_BASE}/artists`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const created = await res.json()
+      artists.value.push(created)
+    }
+
+    resetForm()
+  } catch (e) {
+    error.value = `Unable to save artist (${e.message})`
+    console.error(e)
+  }
 }
 
 function startEdit(artist) {
@@ -186,10 +223,28 @@ function cancelEdit() {
   resetForm()
 }
 
-function deleteArtist(id) {
-  artists.value = artists.value.filter(a => a.ID_Artist !== id)
-  if (selectedArtist.value && selectedArtist.value.ID_Artist === id) {
-    selectedArtist.value = null
+async function deleteArtist(id) {
+  const confirmDelete = window.confirm('Delete this artist ?')
+  if (!confirmDelete) return
+
+  error.value = ''
+
+  try {
+    const res = await fetch(`${API_BASE}/artists/${id}`, {
+      method: 'DELETE'
+    })
+    if (!res.ok && res.status !== 204) {
+      throw new Error(`HTTP ${res.status}`)
+    }
+
+    artists.value = artists.value.filter(a => a.ID_Artist !== id)
+
+    if (selectedArtist.value && selectedArtist.value.ID_Artist === id) {
+      selectedArtist.value = null
+    }
+  } catch (e) {
+    error.value = `Unable to delete artist (${e.message})`
+    console.error(e)
   }
 }
 
@@ -197,6 +252,7 @@ function viewDetails(artist) {
   selectedArtist.value = { ...artist }
 }
 </script>
+
 
 
 <style scoped>
