@@ -6,17 +6,13 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(express.json())
-app.use(cors()) 
+app.use(cors())
 
+const dataDir = path.join(__dirname, 'data')
 
-const artists = require(path.join(__dirname, '../Frontend/public/data/artists.json'))
-const albums = require(path.join(__dirname, '../Frontend/public/data/albums.json'))
-const songs = require(path.join(__dirname, '../Frontend/public/data/songs.json'))
-
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: "ok", message: "Backend skeleton is running" })
-})
+const artists = require(path.join(dataDir, 'artists.json'))
+const albums  = require(path.join(dataDir, 'albums.json'))
+const songs   = require(path.join(dataDir, 'songs.json'))
 
 app.get('/api/artists', (req, res) => {
   res.json(artists)
