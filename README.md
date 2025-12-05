@@ -34,61 +34,106 @@ This project is developed for academic purposes as part of the Advanced Web Prog
 We would like to thank the EFREI engineering school, the ESSCA school, and the teaching staff for providing us with the resources necessary to carry out this project.
 
 ```mermaid
-
- title Planning use cases (29/08/2025 - 12/12/2025)
+gantt
+    title Use cases functions (29/08/2025 - 12/12/2025)
     dateFormat  YYYY-MM-DD
 
-    %% --- USE CASE 1 : NAVIGATION / LECTURE / PLAYLISTS ---
-    section UC1 - Navigation & lecture
-    Register + Verify email + Login           :uc1a, 2025-08-29, 7d
-    Vendredi 29/08 (UC1)                      :milestone, 2025-08-29, 0d
+    %% WEEK 1
+    section Week1
+    register (Peio)              :w1_uc1, 2025-08-29, 2d
+    login (Peio)                 :w1_uc1b, 2025-08-31, 1d
+    writecomment (Safiane)       :w1_uc2, 2025-08-29, 2d
+    manageartists (Johnny)       :w1_uc3, 2025-08-29, 3d
 
-    Browse/Search content                     :uc1b, 2025-09-05, 7d
-    Vendredi 05/09 (UC1)                      :milestone, 2025-09-05, 0d
+    %% WEEK 2
+    section Week2
+    browsecontent (Peio)         :w2_uc1, 2025-09-05, 3d
+    searchcontent (Peio)         :w2_uc1b, 2025-09-08, 2d
+    viewalbum (Safiane)          :w2_uc2, 2025-09-05, 2d
+    managesongs (Johnny)         :w2_uc3, 2025-09-05, 3d
 
-    View song/album/artist                    :uc1c, 2025-09-12, 7d
-    Vendredi 12/09 (UC1)                      :milestone, 2025-09-12, 0d
+    %% WEEK 3
+    section Week3
+    viewsong (Peio)              :w3_uc1, 2025-09-12, 2d
+    viewartist (Peio)            :w3_uc1b, 2025-09-14, 1d
+    rate (Safiane)               :w3_uc2, 2025-09-12, 3d
+    managealbums (Johnny)        :w3_uc3, 2025-09-12, 3d
 
-    Listen + Increase listening counter       :uc1d, 2025-09-19, 7d
-    Vendredi 19/09 (UC1)                      :milestone, 2025-09-19, 0d
+    %% WEEK 4
+    section Week4
+    listentosong (Peio)          :w4_uc1, 2025-09-19, 3d
+    increaselistingcounter (Peio):w4_uc1b, 2025-09-22, 1d
+    editcomment (Safiane)        :w4_uc2, 2025-09-19, 2d
+    managecollaborations (Johnny):w4_uc3, 2025-09-19, 3d
 
-    Playlists (create/add/share) + favoris    :uc1e, 2025-09-26, 7d
-    Vendredi 26/09 (UC1)                      :milestone, 2025-09-26, 0d
+    %% WEEK 5
+    section Week5
+    createplaylist (Peio)        :w5_uc1, 2025-09-26, 2d
+    addsongtoplaylist (Peio)     :w5_uc1b, 2025-09-28, 2d
+    deletecomment (Safiane)      :w5_uc2, 2025-09-26, 2d
+    moderateplaylist (Johnny)    :w5_uc3, 2025-09-26, 3d
 
-    %% --- USE CASE 2 : ADMIN / MODÉRATION ---
-    section UC2 - Admin & modération
-    Manage artists/songs/albums               :uc2a, 2025-10-03, 7d
-    Vendredi 03/10 (UC2)                      :milestone, 2025-10-03, 0d
+    %% WEEK 6
+    section Week6
+    shareplaylist (Peio)         :w6_uc1, 2025-10-03, 2d
+    addtofavorites (Peio)        :w6_uc1b, 2025-10-05, 2d
+    reportcomment (Safiane)      :w6_uc2, 2025-10-03, 2d
+    reviewreportedcomments (Johnny):w6_uc3, 2025-10-03, 3d
 
-    Manage collaborations + playlists         :uc2b, 2025-10-10, 7d
-    Vendredi 10/10 (UC2)                      :milestone, 2025-10-10, 0d
+    %% WEEK 7
+    section Week7
+    viewsongfromfavorite (Peio)  :w7_uc1, 2025-10-10, 2d
+    viewalbumfromfavorite (Peio) :w7_uc1b, 2025-10-12, 1d
+    viewartistfromfavorite (Peio):w7_uc1c, 2025-10-13, 1d
+    moderatecomment (Johnny)     :w7_uc3, 2025-10-10, 3d
+    hidecomment (Johnny)         :w7_uc3b, 2025-10-13, 1d
 
-    Publish/Unpublish content                 :uc2c, 2025-10-17, 7d
-    Vendredi 17/10 (UC2)                      :milestone, 2025-10-17, 0d
+    %% WEEK 8
+    section Week8
+    verifyemail (Peio)           :w8_uc1, 2025-10-17, 2d
+    improveRate (Safiane)        :w8_uc2, 2025-10-17, 3d
+    deletecommentadmin (Johnny)  :w8_uc3, 2025-10-17, 2d
+    restorecomment (Johnny)      :w8_uc3b, 2025-10-19, 1d
 
-    Review reported comments                  :uc2d, 2025-10-24, 7d
-    Vendredi 24/10 (UC2)                      :milestone, 2025-10-24, 0d
+    %% WEEK 9
+    section Week9
+    viewsongtests (Peio)         :w9_uc1, 2025-10-24, 2d
+    viewalbumtests (Peio)        :w9_uc1b, 2025-10-26, 1d
+    writecommenttests (Safiane)  :w9_uc2, 2025-10-24, 2d
+    adminlogin (Johnny)          :w9_uc3, 2025-10-24, 2d
 
-    Moderate/Hide/Delete/Restore comment      :uc2e, 2025-10-31, 7d
-    Vendredi 31/10 (UC2)                      :milestone, 2025-10-31, 0d
+    %% WEEK 10
+    section Week10
+    listentosongtests (Peio)     :w10_uc1, 2025-10-31, 2d
+    addtofavoritestests (Peio)   :w10_uc1b, 2025-11-02, 1d
+    ratetests (Safiane)          :w10_uc2, 2025-10-31, 2d
+    adminbugfix (Johnny)         :w10_uc3, 2025-10-31, 3d
 
-    %% --- USE CASE 3 : NOTES / COMMENTAIRES UTILISATEUR ---
-    section UC3 - Notes & commentaires
-    Rate (song/album/artist)                  :uc3a, 2025-11-07, 7d
-    Vendredi 07/11 (UC3)                      :milestone, 2025-11-07, 0d
+    %% WEEK 11
+    section Week11
+    integrationUC1 (Peio)        :w11_uc1, 2025-11-07, 3d
+    integrationUC2 (Safiane)     :w11_uc2, 2025-11-07, 3d
+    integrationUC3 (Johnny)      :w11_uc3, 2025-11-07, 3d
 
-    Write/Edit/Delete comment                 :uc3b, 2025-11-14, 7d
-    Vendredi 14/11 (UC3)                      :milestone, 2025-11-14, 0d
+    %% WEEK 12
+    section Week12
+    bugfixUC1 (Peio)             :w12_uc1, 2025-11-14, 3d
+    bugfixUC2 (Safiane)          :w12_uc2, 2025-11-14, 3d
+    bugfixUC3 (Johnny)           :w12_uc3, 2025-11-14, 3d
 
-    Report comment (côté user)                :uc3c, 2025-11-21, 7d
-    Vendredi 21/11 (UC3)                      :milestone, 2025-11-21, 0d
+    %% WEEK 13
+    section Week13
+    documentationUC1 (Peio)      :w13_uc1, 2025-11-21, 3d
+    documentationUC2 (Safiane)   :w13_uc2, 2025-11-21, 3d
+    documentationUC3 (Johnny)    :w13_uc3, 2025-11-21, 3d
 
-    Intégration UC1 + UC3 (UX, tests)         :uc3d, 2025-11-28, 7d
-    Vendredi 28/11 (UC3)                      :milestone, 2025-11-28, 0d
+    %% WEEK 14
+    section Week14
+    crosstestsAll (Peio/Safiane/Johnny) :w14_all, 2025-11-28, 5d
 
-    Stabilisation finale & buffer             :uc3e, 2025-12-05, 8d
-    Vendredi 05/12 (finalisation)            :milestone, 2025-12-05, 0d
-    Vendredi 12/12 (livrable)                :milestone, 2025-12-12, 0d
+    %% WEEK 15
+    section Week15
+    finalstabilizationAll (Peio/Safiane/Johnny) :w15_all, 2025-12-05, 8d
 ```
 ## End
 
