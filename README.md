@@ -35,48 +35,60 @@ We would like to thank the EFREI engineering school, the ESSCA school, and the t
 
 ```mermaid
 
-gantt
-    title Project Timeline - Music Information System
+ title Planning use cases (29/08/2025 - 12/12/2025)
     dateFormat  YYYY-MM-DD
 
-    section OCT Kickoff
-    Project Start + Requirements (ALL)      :done, start, 2025-10-01, 1d
+    %% --- USE CASE 1 : NAVIGATION / LECTURE / PLAYLISTS ---
+    section UC1 - Navigation & lecture
+    Register + Verify email + Login           :uc1a, 2025-08-29, 7d
+    Vendredi 29/08 (UC1)                      :milestone, 2025-08-29, 0d
 
-    section OCT UML + Web Init
-    Use Case + Planned Gantt (P)            :uc1, 2025-10-31, 2d
-    UML Activity + Wireframes (S)           :a1, 2025-11-01, 3d
-    UML Sequence + Class (J)                :seq1, 2025-11-01, 3d
-    GoF Creational (P)                      :gof1, 2025-11-04, 2d
-    Git repo + JSON page setup (J)          :git1, 2025-10-31, 2d
-    Express.js + MVC base (S)               :ex1, 2025-11-01, 4d
-    Middleware + DB Controller (P)          :mid1, 2025-11-05, 3d
+    Browse/Search content                     :uc1b, 2025-09-05, 7d
+    Vendredi 05/09 (UC1)                      :milestone, 2025-09-05, 0d
 
-    section NOV UML Dev
-    UML Activity + Wireframes (S)           :a2, 2025-11-07, 3d
-    UML Component + Class (J)               :comp1, 2025-11-07, 3d
-    GoF Behavioral 1 (P)                    :gof2, 2025-11-10, 2d
+    View song/album/artist                    :uc1c, 2025-09-12, 7d
+    Vendredi 12/09 (UC1)                      :milestone, 2025-09-12, 0d
 
-    section NOV Frontend
-    Full frontend using JSON (J)            :front1, 2025-11-10, 5d
-    REST API + Postman Testing (S)          :postman, 2025-11-12, 3d
-    Auth Services (P)                       :auth1, 2025-11-14, 3d
+    Listen + Increase listening counter       :uc1d, 2025-09-19, 7d
+    Vendredi 19/09 (UC1)                      :milestone, 2025-09-19, 0d
 
-    section NOV UML Refinement
-    UML Component + Class revision (J)      :comp2, 2025-11-21, 3d
-    GoF Behavioral 2 (S)                    :gof3, 2025-11-22, 2d
+    Playlists (create/add/share) + favoris    :uc1e, 2025-09-26, 7d
+    Vendredi 26/09 (UC1)                      :milestone, 2025-09-26, 0d
 
-    section NOV Backend
-    Server-side services (S)                :serv1, 2025-11-22, 3d
-    Controllers + Auth merged (P)           :ctrl1, 2025-11-24, 3d
+    %% --- USE CASE 2 : ADMIN / MODÉRATION ---
+    section UC2 - Admin & modération
+    Manage artists/songs/albums               :uc2a, 2025-10-03, 7d
+    Vendredi 03/10 (UC2)                      :milestone, 2025-10-03, 0d
 
-    section DEC Final
-    UML Final (ALL)                         :umlf, 2025-12-01, 4d
-    GoF Structural (J)                      :gof4, 2025-12-03, 3d
-    CRUD + Server + Git Documentation (P)   :crud1, 2025-12-03, 3d
-    CRUD + Frontend + Repo Check (S)        :crud2, 2025-12-05, 3d
-    Testing + Code Review (J)               :test1, 2025-12-07, 3d
-    Documentation (ALL)                     :doc, 2025-12-09, 3d
-    Final Defense + Submission (ALL)        :final, 2025-12-12, 1d
+    Manage collaborations + playlists         :uc2b, 2025-10-10, 7d
+    Vendredi 10/10 (UC2)                      :milestone, 2025-10-10, 0d
+
+    Publish/Unpublish content                 :uc2c, 2025-10-17, 7d
+    Vendredi 17/10 (UC2)                      :milestone, 2025-10-17, 0d
+
+    Review reported comments                  :uc2d, 2025-10-24, 7d
+    Vendredi 24/10 (UC2)                      :milestone, 2025-10-24, 0d
+
+    Moderate/Hide/Delete/Restore comment      :uc2e, 2025-10-31, 7d
+    Vendredi 31/10 (UC2)                      :milestone, 2025-10-31, 0d
+
+    %% --- USE CASE 3 : NOTES / COMMENTAIRES UTILISATEUR ---
+    section UC3 - Notes & commentaires
+    Rate (song/album/artist)                  :uc3a, 2025-11-07, 7d
+    Vendredi 07/11 (UC3)                      :milestone, 2025-11-07, 0d
+
+    Write/Edit/Delete comment                 :uc3b, 2025-11-14, 7d
+    Vendredi 14/11 (UC3)                      :milestone, 2025-11-14, 0d
+
+    Report comment (côté user)                :uc3c, 2025-11-21, 7d
+    Vendredi 21/11 (UC3)                      :milestone, 2025-11-21, 0d
+
+    Intégration UC1 + UC3 (UX, tests)         :uc3d, 2025-11-28, 7d
+    Vendredi 28/11 (UC3)                      :milestone, 2025-11-28, 0d
+
+    Stabilisation finale & buffer             :uc3e, 2025-12-05, 8d
+    Vendredi 05/12 (finalisation)            :milestone, 2025-12-05, 0d
+    Vendredi 12/12 (livrable)                :milestone, 2025-12-12, 0d
 ```
 ## End
 
