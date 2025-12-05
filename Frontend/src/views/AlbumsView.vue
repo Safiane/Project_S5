@@ -109,7 +109,7 @@
           <p><strong>ID:</strong> {{ selectedAlbum.ID_Album }}</p>
           <p><strong>Title:</strong> {{ selectedAlbum.Album_Title }}</p>
           <p><strong>Artist:</strong> {{ selectedAlbum.artist?.Name || '—' }}</p>
-          <p><strong>Release date:</strong> {{ selectedAlbum.Album_Release_Date || '—' }}</p>
+          <p><strong>Release date:</strong> {{ formatDate(selectedAlbum.Album_Release_Date) }}</p>
           <p><strong>Type:</strong> {{ selectedAlbum.Album_Type || '—' }}</p>
           <p><strong>Record company:</strong> {{ selectedAlbum.Record_Company || '—' }}</p>
           <p><strong>Collaborations:</strong> {{ selectedAlbum.Collaborations || '—' }}</p>
@@ -123,7 +123,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-const API_BASE = 'http://localhost:3000/api'
+const API_BASE = 'http://localhost:3000'
 
 const albums = ref([])
 const artists = ref([])
@@ -152,8 +152,8 @@ async function loadData () {
   error.value = ''
   try {
     const [alRes, arRes] = await Promise.all([
-      fetch(`${API_BASE}/albums`),
-      fetch(`${API_BASE}/artists`)
+      fetch(`${API_BASE}/albumsapi/list`),
+      fetch(`${API_BASE}/artistsapi/list`)
     ])
     if (!alRes.ok || !arRes.ok) {
       throw new Error(`HTTP ${alRes.status}/${arRes.status}`)
@@ -188,7 +188,7 @@ function resetForm () {
   isEditing.value = false
 }
 
-function submitForm () {
+async function submitForm () {
   if (!form.value.Album_Title || !form.value.ID_Artist) return
 
   const normalized = {
@@ -196,17 +196,21 @@ function submitForm () {
     ID_Artist: Number(form.value.ID_Artist) || null
   }
 
-  if (isEditing.value) {
-    const idx = albums.value.findIndex(a => a.ID_Album === form.value.ID_Album)
-    if (idx !== -1) {
-      albums.value[idx] = { ...normalized }
-    }
-  } else {
-    const album = { ...normalized, ID_Album: nextId.value }
-    albums.value.push(album)
-  }
+  const id = isEditing.value ? form.value.ID_Album : 0
 
-  resetForm()
+  try {
+    const res = await fetch(`${API_BASE}/albumsapi/update/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(normalized)
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    await loadData()
+    resetForm()
+  } catch (e) {
+    error.value = `Unable to save album (${e.message})`
+    console.error(e)
+  }
 }
 
 function startEdit (alb) {
@@ -226,17 +230,33 @@ function cancelEdit () {
   resetForm()
 }
 
-function deleteAlbum (id) {
-  albums.value = albums.value.filter(a => a.ID_Album !== id)
-  if (selectedAlbum.value && selectedAlbum.value.ID_Album === id) {
-    selectedAlbum.value = null
+async function deleteAlbum (id) {
+  try {
+    const res = await fetch(`${API_BASE}/albumsapi/del/${id}`)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    await loadData()
+    if (selectedAlbum.value && selectedAlbum.value.ID_Album === id) {
+      selectedAlbum.value = null
+    }
+  } catch (e) {
+    // L'album a encore des chansons
+    error.value = 'impossible to delete this album: it still has songs on it'
+    console.error(e)
   }
 }
+
 
 function viewDetails (alb) {
   selectedAlbum.value = { ...alb }
 }
+
+function formatDate (value) {
+  if (!value) return '—'
+  return String(value).split('T')[0]
+}
+
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");

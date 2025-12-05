@@ -100,7 +100,7 @@
           <p><strong>Style:</strong> {{ selectedArtist.Style }}</p>
           <p><strong>Country:</strong> {{ selectedArtist.Country }}</p>
           <p><strong>Gender:</strong> {{ selectedArtist.Gender || '—' }}</p>
-          <p><strong>Start date:</strong> {{ selectedArtist.Start_Date || '—' }}</p>
+          <p><strong>Start date:</strong> {{ formatDate(selectedArtist.Start_Date) }}</p>
           <button @click="selectedArtist = null">Close</button>
         </section>
       </div>
@@ -111,7 +111,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-const API_BASE = 'http://localhost:3000/api'
+const API_BASE = 'http://localhost:3000'
 
 const artists = ref([])
 const loading = ref(true)
@@ -137,7 +137,7 @@ async function loadArtists () {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch(`${API_BASE}/artists`)
+    const res = await fetch(`${API_BASE}/artistsapi/list`)
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const json = await res.json()
     if (!Array.isArray(json)) throw new Error('Unexpected JSON format')
@@ -164,20 +164,24 @@ function resetForm () {
   isEditing.value = false
 }
 
-function submitForm () {
+async function submitForm () {
   if (!form.value.Name) return
 
-  if (isEditing.value) {
-    const idx = artists.value.findIndex(a => a.ID_Artist === form.value.ID_Artist)
-    if (idx !== -1) {
-      artists.value[idx] = { ...form.value }
-    }
-  } else {
-    const artist = { ...form.value, ID_Artist: nextId.value }
-    artists.value.push(artist)
-  }
+  const id = isEditing.value ? form.value.ID_Artist : 0
 
-  resetForm()
+  try {
+    const res = await fetch(`${API_BASE}/artistsapi/update/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form.value)
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    await loadArtists()
+    resetForm()
+  } catch (e) {
+    error.value = `Unable to save artist (${e.message})`
+    console.error(e)
+  }
 }
 
 function startEdit (artist) {
@@ -189,17 +193,33 @@ function cancelEdit () {
   resetForm()
 }
 
-function deleteArtist (id) {
-  artists.value = artists.value.filter(a => a.ID_Artist !== id)
-  if (selectedArtist.value && selectedArtist.value.ID_Artist === id) {
-    selectedArtist.value = null
+async function deleteArtist (id) {
+  try {
+    const res = await fetch(`${API_BASE}/artistsapi/del/${id}`)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    await loadArtists()
+    if (selectedArtist.value && selectedArtist.value.ID_Artist === id) {
+      selectedArtist.value = null
+    }
+  } catch (e) {
+    // L'artiste a encore des albums (contrainte de clé étrangère)
+    error.value = 'impossible to remove this artist: he still has albums'
+    console.error(e)
   }
 }
+
 
 function viewDetails (artist) {
   selectedArtist.value = { ...artist }
 }
+
+function formatDate (value) {
+  if (!value) return '—'
+  return String(value).split('T')[0]
+}
+
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");
