@@ -10,4 +10,8 @@ Thumbs.db
 *.tmp
 *.log
 *.bak
-Backend/ 
+
+# Ignore backend dependencies only
+Backend/node_modules/
+Backend/npm-debug.log
+Backend/.env

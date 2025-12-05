@@ -22,7 +22,7 @@
       <p v-else-if="error" class="error">{{ error }}</p>
 
       <div v-else class="layout">
-        <!-- CREATE / EDIT FORM -->
+        <!-- FORM -->
         <section class="card form-card">
           <h3>{{ isEditing ? 'Edit song' : 'Create new song' }}</h3>
 
@@ -116,7 +116,7 @@
           <p><strong>Title:</strong> {{ selectedSong.Song_Title }}</p>
           <p><strong>Album:</strong> {{ selectedSong.album?.Album_Title || '—' }}</p>
           <p><strong>Artist:</strong> {{ selectedSong.artist?.Name || '—' }}</p>
-          <p><strong>Release date:</strong> {{ selectedSong.Song_Release_Date || '—' }}</p>
+          <p><strong>Release date:</strong> {{ formatDate(selectedSong.Song_Release_Date) }}</p>
           <p><strong>Duration:</strong> {{ selectedSong.Duration || '—' }}</p>
           <p><strong>Language:</strong> {{ selectedSong.Language || '—' }}</p>
           <p><strong>Listens:</strong> {{ selectedSong.Nb_Listening.toLocaleString() }}</p>
@@ -130,7 +130,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 
-const BASE = (import.meta?.env?.BASE_URL) || (process?.env?.BASE_URL) || '/'
+const API_BASE = 'http://localhost:3000'
 
 const q = ref('')
 
@@ -157,12 +157,14 @@ const nextId = computed(() => {
   return Math.max(...songs.value.map(s => s.ID_Song)) + 1
 })
 
-onMounted(async () => {
+async function loadData () {
+  loading.value = true
+  error.value = ''
   try {
     const [sRes, alRes, aRes] = await Promise.all([
-      fetch(`${BASE}data/songs.json`),
-      fetch(`${BASE}data/albums.json`),
-      fetch(`${BASE}data/artists.json`)
+      fetch(`${API_BASE}/songsapi/list`),
+      fetch(`${API_BASE}/albumsapi/list`),
+      fetch(`${API_BASE}/artistsapi/list`)
     ])
     if (!sRes.ok || !alRes.ok || !aRes.ok) {
       throw new Error(`HTTP ${sRes.status}/${alRes.status}/${aRes.status}`)
@@ -176,7 +178,9 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(loadData)
 
 const albumsWithArtist = computed(() => {
   const byArtist = Object.fromEntries(artists.value.map(a => [a.ID_Artist, a]))
@@ -195,6 +199,7 @@ const joined = computed(() => {
 const filtered = computed(() => {
   const needle = q.value.toLowerCase()
   if (!needle) return joined.value
+
   return joined.value.filter(r =>
     [r.Song_Title, r.album?.Album_Title, r.artist?.Name]
       .join(' ')
@@ -203,7 +208,7 @@ const filtered = computed(() => {
   )
 })
 
-function resetForm() {
+function resetForm () {
   form.value = {
     ID_Song: null,
     Song_Title: '',
@@ -216,7 +221,7 @@ function resetForm() {
   isEditing.value = false
 }
 
-function submitForm() {
+async function submitForm () {
   if (!form.value.Song_Title || !form.value.ID_Album) return
 
   const normalized = {
@@ -225,20 +230,24 @@ function submitForm() {
     ID_Album: Number(form.value.ID_Album)
   }
 
-  if (isEditing.value) {
-    const idx = songs.value.findIndex(s => s.ID_Song === form.value.ID_Song)
-    if (idx !== -1) {
-      songs.value[idx] = { ...normalized }
-    }
-  } else {
-    const song = { ...normalized, ID_Song: nextId.value }
-    songs.value.push(song)
-  }
+  const id = isEditing.value ? form.value.ID_Song : 0
 
-  resetForm()
+  try {
+    const res = await fetch(`${API_BASE}/songsapi/update/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(normalized)
+    })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    await loadData()
+    resetForm()
+  } catch (e) {
+    error.value = `Unable to save song (${e.message})`
+    console.error(e)
+  }
 }
 
-function startEdit(row) {
+function startEdit (row) {
   isEditing.value = true
   form.value = {
     ID_Song: row.ID_Song,
@@ -251,21 +260,36 @@ function startEdit(row) {
   }
 }
 
-function cancelEdit() {
+function cancelEdit () {
   resetForm()
 }
 
-function deleteSong(id) {
-  songs.value = songs.value.filter(s => s.ID_Song !== id)
-  if (selectedSong.value && selectedSong.value.ID_Song === id) {
-    selectedSong.value = null
+async function deleteSong (id) {
+  try {
+    const res = await fetch(`${API_BASE}/songsapi/del/${id}`)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    await loadData()
+    if (selectedSong.value && selectedSong.value.ID_Song === id) {
+      selectedSong.value = null
+    }
+  } catch (e) {
+    error.value = 'This song cannot be deleted'
+    console.error(e)
   }
 }
 
-function viewDetails(row) {
+
+function viewDetails (row) {
   selectedSong.value = { ...row }
 }
+
+function formatDate (value) {
+  if (!value) return '—'
+  return String(value).split('T')[0]
+}
+
 </script>
+
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Raleway:wght@400;500&display=swap");

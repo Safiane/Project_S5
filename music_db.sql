@@ -1,95 +1,84 @@
 CREATE DATABASE IF NOT EXISTS music_db;
 USE music_db;
 
+-- TABLE Artist
 CREATE TABLE Artist (
-    ID_Artist INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(50),
-    Style VARCHAR(50),
-    Country VARCHAR(50),
-    Gender VARCHAR(50),
-    Start_Date DATE
+  ID_Artist INT AUTO_INCREMENT PRIMARY KEY,
+  Name VARCHAR(50),
+  Style VARCHAR(50),
+  Country VARCHAR(50),
+  Gender VARCHAR(50),
+  Start_Date DATE
 );
 
+-- TABLE Album
 CREATE TABLE Album (
-    ID_Album INT AUTO_INCREMENT PRIMARY KEY,
-    Album_Title VARCHAR(50),
-    Album_Release_Date DATE,
-    Album_Type VARCHAR(50),
-    Record_Company VARCHAR(50),
-    ID_Artist INT,
-    Collaborations VARCHAR(50),
-    FOREIGN KEY (ID_Artist) REFERENCES Artist(ID_Artist)
+  ID_Album INT AUTO_INCREMENT PRIMARY KEY,
+  Album_Title VARCHAR(50),
+  Album_Release_Date DATE,
+  Album_Type VARCHAR(50),
+  Record_Company VARCHAR(50),
+  Collaborations VARCHAR(255),
+  ID_Artist INT,
+  FOREIGN KEY (ID_Artist) REFERENCES Artist(ID_Artist)
 );
 
+-- TABLE Song
 CREATE TABLE Song (
-    ID_Song INT AUTO_INCREMENT PRIMARY KEY,
-    Song_Title VARCHAR(50),
-    Song_Release_Date DATE,
-    Duration TIME,
-    Language VARCHAR(50),
-    Nb_Listening INT,
-    ID_Album INT,
-    FOREIGN KEY (ID_Album) REFERENCES Album(ID_Album)
+  ID_Song INT AUTO_INCREMENT PRIMARY KEY,
+  Song_Title VARCHAR(50),
+  Song_Release_Date DATE,
+  Duration VARCHAR(20),
+  Language VARCHAR(50),
+  Nb_Listening INT,
+  ID_Album INT,
+  FOREIGN KEY (ID_Album) REFERENCES Album(ID_Album)
 );
 
--- ==========================================================
--- Artists
--- ==========================================================
-INSERT INTO Artist (Name, Style, Country,Gender, Start_Date) VALUES
-('Nujabes', 'Hip-Hop/Jazz Rap', 'Japan', '1996-01-01'),
-('Radiohead', 'Alternative Rock', 'UK', '1985-01-01'),
-('La Rvfleuze', 'Rap/Trap', 'France', '2020-01-01'),
-('A$AP Rocky', 'Hip-Hop', 'USA', '2011-01-01'),
-('Ateyaba', 'Rap', 'France', '2010-01-01'),
-('Kaaris', 'Rap/Trap', 'France', '2011-01-01'),
-('Tame Impala', 'Psychedelic Rock', 'Australia', '2007-01-01'),
-('Booba', 'Rap', 'France', '1995-01-01'),
-('Kendrick Lamar', 'Hip-Hop', 'USA', '2004-01-01'),
-('Travis Scott', 'Hip-Hop', 'USA', '2012-01-01');
+-- DONNÉES ARTISTES
+INSERT INTO Artist (Name, Style, Country, Gender, Start_Date) VALUES
+('Nujabes','Hip-Hop/Jazz Rap','Japan','Male','1996-01-01'),
+('Radiohead','Alternative Rock','UK','Group','1985-01-01'),
+('La Rvfleuze','Rap/Trap','France','Male','2020-01-01'),
+('A$AP Rocky','Hip-Hop','USA','Male','2011-01-01'),
+('Ateyaba','Rap','France','Male','2010-01-01'),
+('Kaaris','Rap/Trap','France','Male','2011-01-01'),
+('Tame Impala','Psychedelic Rock','Australia','Group','2007-01-01'),
+('Booba','Rap','France','Male','1995-01-01'),
+('Kendrick Lamar','Hip-Hop','USA','Male','2004-01-01'),
+('Travis Scott','Hip-Hop','USA','Male','2012-01-01');
 
--- ==========================================================
--- Albums
--- ==========================================================
-INSERT INTO Album (Album_Title, Album_Release_Date, Album_Type, Record_Company,Collaborations, ID_Artist) VALUES
--- Nujabes
-('Metaphorical Music', '2003-08-21', 'Hip-Hop/Jazz Rap', 'Hydeout', 1),
-('Modal Soul', '2005-11-11', 'Hip-Hop/Jazz Rap', 'Hydeout', 1),
+-- DONNÉES ALBUMS
+INSERT INTO Album (Album_Title, Album_Release_Date, Album_Type, Record_Company, Collaborations, ID_Artist) VALUES
+('Metaphorical Music','2003-08-21','Hip-Hop/Jazz Rap','Hydeout',NULL,1),
+('Modal Soul','2005-11-11','Hip-Hop/Jazz Rap','Hydeout',NULL,1),
 
--- Radiohead
-('OK Computer', '1997-05-21', 'Alternative Rock', 'Parlophone', 2),
-('Kid A', '2000-10-02', 'Experimental Rock', 'Parlophone', 2),
+('OK Computer','1997-05-21','Alternative Rock','Parlophone',NULL,2),
+('Kid A','2000-10-02','Experimental Rock','Parlophone',NULL,2),
 
--- La Rvfleuze
-('Serrure', '2023-01-01', 'Rap/Trap', 'Indépendant', 3),
-('Code 404', '2024-02-15', 'Rap/Trap', 'Indépendant', 3),
+('Serrure','2023-01-01','Rap/Trap','Indépendant',NULL,3),
+('Code 404','2024-02-15','Rap/Trap','Indépendant',NULL,3),
 
--- A$AP Rocky
-('Long.Live.A$AP', '2013-01-15', 'Hip-Hop', 'RCA', 4),
-('At.Long.Last.A$AP', '2015-05-26', 'Hip-Hop', 'RCA', 4),
+('Long.Live.A$AP','2013-01-15','Hip-Hop','RCA','feat. Drake, 2 Chainz, Kendrick Lamar',4),
+('At.Long.Last.A$AP','2015-05-26','Hip-Hop','RCA','feat. Kanye West, M.I.A.',4),
 
--- Ateyaba
-('Ateyaba', '2014-06-02', 'Rap', 'Def Jam', 5),
-('Tokyo', '2018-05-15', 'Rap', 'Def Jam', 5),
+('Ateyaba','2014-06-02','Rap','Def Jam',NULL,5),
+('Tokyo','2018-05-15','Rap','Def Jam',NULL,5),
 
--- Kaaris
-('Or Noir', '2013-10-21', 'Rap/Trap', 'Capitol', 6),
-('Dozo', '2017-11-17', 'Rap/Trap', 'Capitol', 6),
+('Or Noir','2013-10-21','Rap/Trap','Capitol',NULL,6),
+('Dozo','2017-11-17','Rap/Trap','Capitol',NULL,6),
 
--- Tame Impala
-('Lonerism', '2012-10-05', 'Psychedelic Rock', 'Modular', 7),
-('Currents', '2015-07-17', 'Psychedelic Rock', 'Modular', 7),
+('Lonerism','2012-10-05','Psychedelic Rock','Modular',NULL,7),
+('Currents','2015-07-17','Psychedelic Rock','Modular',NULL,7),
 
--- Booba
-('Temps Mort', '2002-01-22', 'Rap', '45 Scientific', 8),
-('Trône', '2017-12-01', 'Rap', 'Tallac Records', 8),
+('Temps Mort','2002-01-22','Rap','45 Scientific',NULL,8),
+('Trône','2017-12-01','Rap','Tallac Records',NULL,8),
 
--- Kendrick Lamar
-('good kid, m.A.A.d city', '2012-10-22', 'Hip-Hop', 'Top Dawg', 9),
-('DAMN.', '2017-04-14', 'Hip-Hop', 'Top Dawg', 9),
+('good kid, m.A.A.d city','2012-10-22','Hip-Hop','Top Dawg','feat. Drake, Dr. Dre',9),
+('DAMN.','2017-04-14','Hip-Hop','Top Dawg',NULL,9),
 
--- Travis Scott
-('Rodeo', '2015-09-04', 'Hip-Hop', 'Grand Hustle', 10),
-('Astroworld', '2018-08-03', 'Hip-Hop', 'Cactus Jack', 10);
+('Rodeo','2015-09-04','Hip-Hop','Grand Hustle','feat. Future, Justin Bieber',10),
+('Astroworld','2018-08-03','Hip-Hop','Cactus Jack','feat. Drake, Kid Cudi, The Weeknd',10);
 
 -- ==========================================================
 -- Songs
