@@ -8,8 +8,8 @@
     "dev": "concurrently \"cd Backend && npm start\" \"cd Frontend && npm run serve\""
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://Safiane: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@github.com/Safiane/Project_S5.git"
+  "type": "git",
+  "url": "https://github.com/Safiane/Project_S5.git"
   },
   "keywords": [],
   "author": "",
