@@ -10,23 +10,22 @@ const routes = [
   {
     path: '/artists',
     name: 'artists',
-    component: function () {
-      return import('../views/ArtistsView.vue')
-    }
+    component: () => import('../views/ArtistsView.vue')
   },
   {
     path: '/albums',
     name: 'albums',
-    component: function () {
-      return import('../views/AlbumsView.vue')
-    }
+    component: () => import('../views/AlbumsView.vue')
   },
   {
     path: '/songs',
     name: 'songs',
-    component: function () {
-      return import('../views/SongsView.vue')
-    }
+    component: () => import('../views/SongsView.vue')
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('../views/LoginView.vue')   // <-- nouvelle vue
   }
 ]
 

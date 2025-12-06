@@ -1,4 +1,5 @@
 // controllers/songsapi.route.js
+const auth = require('../utils/users.auth');
 const express = require('express');
 const router = express.Router();
 
@@ -10,11 +11,12 @@ router.get('/list', songListAction);
 // GET one song
 router.get('/show/:songId', songShowAction);
 
-// DELETE song
-router.get('/del/:songId', songDelAction);
+// DELETE artist
+router.get('/del/:songId', auth.authorizeRequest('ADMIN'), songDelAction);
 
-// CREATE/UPDATE song
-router.post('/update/:songId', songUpdateAction);
+// CREATE/UPDATE artist
+router.post('/update/:songId', auth.authorizeRequest('ADMIN'), songUpdateAction);
+
 
 // http://localhost:PORT/songsapi/list
 async function songListAction(req, res) {

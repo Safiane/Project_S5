@@ -1,4 +1,5 @@
 // controllers/artistsapi.route.js
+const auth = require('../utils/users.auth');
 const express = require('express');
 const router = express.Router();
 
@@ -11,10 +12,10 @@ router.get('/list', artistListAction);
 router.get('/show/:artistId', artistShowAction);
 
 // DELETE artist
-router.get('/del/:artistId', artistDelAction);
+router.get('/del/:artistId', auth.authorizeRequest('ADMIN'), artistDelAction);
 
-// CREATE/UPDATE artist (pattern comme carUpdateAction)
-router.post('/update/:artistId', artistUpdateAction);
+// CREATE/UPDATE artist
+router.post('/update/:artistId', auth.authorizeRequest('ADMIN'), artistUpdateAction);
 
 // http://localhost:9000/artistsapi/list
 async function artistListAction(req, res) {

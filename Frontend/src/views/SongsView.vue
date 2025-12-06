@@ -13,9 +13,9 @@
       </div>
     </section>
 
-    <section class="page-grid">
+    <section class="page-grid" :class="{ 'single-column': !isAdmin }">
       <!-- Form -->
-      <div class="card form-card">
+      <div class="card form-card" v-if="isAdmin">
         <div class="card-header">
           <h2>{{ isEditing ? 'Edit song' : 'Create new song' }}</h2>
           <span class="tag">{{ isEditing ? 'Editing' : 'New' }}</span>
@@ -161,8 +161,8 @@
                   <td>{{ row.Nb_Listening.toLocaleString() }}</td>
                   <td class="actions">
                     <button class="btn xs ghost" @click="viewDetails(row)">View</button>
-                    <button class="btn xs secondary" @click="startEdit(row)">Edit</button>
-                    <button class="btn xs danger" @click="deleteSong(row.ID_Song)">Delete</button>
+                    <button v-if="isAdmin" class="btn xs secondary" @click="startEdit(row)">Edit</button>
+                    <button v-if="isAdmin" class="btn xs danger" @click="deleteSong(row.ID_Song)">Delete</button>
                   </td>
                 </tr>
               </tbody>
@@ -225,6 +225,23 @@
 </template>
 
 <script setup>
+
+const currentUser = ref(null)
+
+function loadCurrentUser () {
+  try {
+    const raw = localStorage.getItem('sonity_user')
+    currentUser.value = raw ? JSON.parse(raw) : null
+  } catch {
+    currentUser.value = null
+  }
+}
+
+const isAdmin = computed(() => currentUser.value?.role === 'ADMIN')
+
+loadCurrentUser()
+
+
 import { ref, onMounted, computed } from 'vue'
 
 const API_BASE = 'http://localhost:3000'
@@ -836,13 +853,16 @@ input:focus {
   top: 88px;
   max-width: 320px;
   width: 100%;
+  max-height: calc(100vh - 120px); /* limite en hauteur */
   background: #151515;
   border-radius: 18px;
   border: 1px solid #3a3a3a;
   padding: 14px 16px 16px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
   z-index: 900;
+  overflow-y: auto;              /* scroll interne si contenu long */
 }
+
 
 .drawer-header {
   display: flex;
@@ -876,6 +896,9 @@ th.sortable::after {
   margin-bottom: 10px;    /* espace entre la barre de recherche et la table */
 }
 
+.page-grid.single-column {
+  grid-template-columns: minmax(0, 1fr);
+}
 
 
 </style>

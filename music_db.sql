@@ -35,6 +35,17 @@ CREATE TABLE Song (
   FOREIGN KEY (ID_Album) REFERENCES Album(ID_Album)
 );
 
+-- TABLE Users (auth)
+
+CREATE TABLE IF NOT EXISTS users (
+  user_id    INT AUTO_INCREMENT PRIMARY KEY,
+  user_name  VARCHAR(50)  NOT NULL UNIQUE,
+  user_email VARCHAR(100) NULL,
+  user_pass  VARCHAR(255) NOT NULL,  -- hash bcrypt
+  user_role  VARCHAR(20)  NOT NULL   -- 'ADMIN' ou 'USER'
+);
+
+
 -- DONNÉES ARTISTES
 INSERT INTO Artist (Name, Style, Country, Gender, Start_Date) VALUES
 ('Nujabes','Hip-Hop/Jazz Rap','Japan','Male','1996-01-01'),

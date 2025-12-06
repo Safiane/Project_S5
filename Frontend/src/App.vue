@@ -22,6 +22,11 @@
           <router-link class="nav-link" to="/albums">Albums</router-link>
           <router-link class="nav-link" to="/songs">Songs</router-link>
         </div>
+        <div class="nav-user">
+          <router-link class="nav-link" to="/login">
+            {{ currentUser ? currentUser.name + ' · ' + currentUser.role : 'Login / Sign up' }}
+          </router-link>
+        </div>
       </div>
     </nav>
 
@@ -30,6 +35,33 @@
     </main>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const currentUser = ref(null)
+
+function loadUser () {
+  try {
+    const raw = localStorage.getItem('sonity_user')
+    currentUser.value = raw ? JSON.parse(raw) : null
+  } catch {
+    currentUser.value = null
+  }
+}
+
+onMounted(loadUser)
+
+// recharger le user quand on change de page (notamment après /login)
+watch(
+  () => route.fullPath,
+  () => loadUser()
+)
+</script>
+
+
 
 <style>
 body {
@@ -150,4 +182,9 @@ body {
 .app-main {
   padding-top: 56px;
 }
+
+.nav-user {
+  margin-left: 12px;
+}
+
 </style>

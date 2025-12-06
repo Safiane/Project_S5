@@ -40,16 +40,19 @@ app.use(
   })
 );
 
-// 5. Auth (plus tard si besoin)
-// const auth = require('./utils/users.auth');
-// auth.initializeAuthentications(app);
-// app.use('/auth', require('./controllers/auth.route'));
 
-// 6. Routes API musique
+// 5. Auth
+const auth = require('./utils/users.auth');
+auth.initializeAuthentications(app);
+
+
+// 6. Routes API musique + auth
+const authRouter = require('./controllers/auth.route');
 const artistsRouter = require('./controllers/artistsapi.route');
 const albumsRouter = require('./controllers/albumsapi.route');
 const songsRouter = require('./controllers/songsapi.route');
 
+app.use('/auth', authRouter);
 app.use('/artistsapi', artistsRouter);
 app.use('/albumsapi', albumsRouter);
 app.use('/songsapi', songsRouter);

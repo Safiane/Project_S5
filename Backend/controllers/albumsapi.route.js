@@ -1,4 +1,5 @@
 // controllers/albumsapi.route.js
+const auth = require('../utils/users.auth');
 const express = require('express');
 const router = express.Router();
 
@@ -10,11 +11,11 @@ router.get('/list', albumListAction);
 // GET one album
 router.get('/show/:albumId', albumShowAction);
 
-// DELETE album
-router.get('/del/:albumId', albumDelAction);
+// DELETE artist
+router.get('/del/:albumId', auth.authorizeRequest('ADMIN'), albumDelAction);
 
-// CREATE/UPDATE album
-router.post('/update/:albumId', albumUpdateAction);
+// CREATE/UPDATE artist
+router.post('/update/:albumId', auth.authorizeRequest('ADMIN'), albumUpdateAction);
 
 // http://localhost:PORT/albumsapi/list
 async function albumListAction(req, res) {
