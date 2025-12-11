@@ -1,7 +1,10 @@
 // controllers/artistsapi.route.js
+console.log('artistsapi.route.js CHARGE');
+
 const auth = require('../utils/users.auth');
 const express = require('express');
 const router = express.Router();
+
 
 const artistRepo = require('../utils/artists.repository');
 
@@ -35,6 +38,8 @@ async function artistDelAction(req, res) {
 }
 
 async function artistUpdateAction(req, res) {
+  console.log('=== ARTIST UPDATE ACTION ===');
+  console.log('BODY RECU :', req.body);
   const json = JSON.stringify(req.body);
   console.log(json);
 

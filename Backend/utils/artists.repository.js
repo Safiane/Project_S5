@@ -37,24 +37,26 @@ module.exports = {
   },
 
   async addOneArtist(name, style, country, gender, startDate) {
-    try {
-      const sql = `
-        INSERT INTO Artist (Name, Style, Country, Gender, Start_Date)
-        VALUES (?, ?, ?, ?, ?)
-      `;
-      const [okPacket] = await pool.execute(sql, [
-        name,
-        style || null,
-        country || null,
-        gender || null,
-        normalizeDate(startDate) || null,
-      ]);
-      return okPacket.insertId;
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  },
+  try {
+    const sql = `
+      INSERT INTO Artist (Name, Style, Country, Gender, Start_Date)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const [okPacket] = await pool.execute(sql, [
+      name,
+      style || null,
+      country || null,
+      gender || null,
+      normalizeDate(startDate) || null,
+    ]);
+    console.log('INSERT ARTIST OKPACKET :', okPacket);
+    return okPacket.insertId;
+  } catch (err) {
+    console.log('INSERT ARTIST ERROR :', err);
+    throw err;
+  }
+},
+
 
   async editOneArtist(artistId, name, style, country, gender, startDate) {
     try {

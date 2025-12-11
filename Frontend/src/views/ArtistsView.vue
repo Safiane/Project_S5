@@ -232,7 +232,9 @@ async function loadArtists () {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch(`${API_BASE}/artistsapi/list`)
+    const res = await fetch(`${API_BASE}/artistsapi/list`, {
+      credentials: 'include'
+    })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const json = await res.json()
     if (!Array.isArray(json)) throw new Error('Unexpected JSON format')
@@ -268,6 +270,7 @@ async function submitForm () {
     const res = await fetch(`${API_BASE}/artistsapi/update/${id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',            // important
       body: JSON.stringify(form.value)
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -295,14 +298,15 @@ function cancelEdit () {
 
 async function deleteArtist (id) {
   try {
-    const res = await fetch(`${API_BASE}/artistsapi/del/${id}`)
+    const res = await fetch(`${API_BASE}/artistsapi/del/${id}`, {
+      credentials: 'include'             // important
+    })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     await loadArtists()
     if (selectedArtist.value && selectedArtist.value.ID_Artist === id) {
       selectedArtist.value = null
     }
   } catch (e) {
-    // L'artiste a encore des albums (contrainte de clé étrangère)
     error.value = 'impossible to remove this artist: he still has albums'
     console.error(e)
   }

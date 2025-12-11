@@ -1,19 +1,6 @@
-// utils/users.repository.js
-
 const bcrypt = require('bcryptjs');
 const pool = require(__dirname + '\\db.include.js');
 
-// TODO (plus tard): Registration (INSERT INTO users ...)
-async function registerUser(username, password, role = 'USER') {
-  const hash = await bcrypt.hash(password, 10);
-  const sql = `
-    INSERT INTO users (user_name, user_email, user_pass, user_role)
-    VALUES (?, ?, ?, ?)
-  `;
-  const email = `${username}@example.com`;
-  const [result] = await pool.execute(sql, [username, email, hash, role]);
-  return result.insertId;
-}
 // TODO (plus tard): Edit user, change password, etc.
 
 module.exports = {
@@ -61,8 +48,8 @@ module.exports = {
     }
   },
 
-  // Exemple d’INSERT pour une future registration simple
-  async registerUser(username, email, password, role) {
+  // Exemple d’INSERT pour une registration simple
+  async registerUser(username, password, role = 'USER') {
     try {
       const saltRounds = 10;
       const hash = await bcrypt.hash(password, saltRounds);
@@ -71,12 +58,16 @@ module.exports = {
         INSERT INTO users (user_name, user_email, user_pass, user_role)
         VALUES (?, ?, ?, ?)
       `;
+
+      const email = `${username}@example.com`;
+
       const [okPacket] = await pool.execute(sql, [
         username,
-        email || null,
+        email,
         hash,
         role || 'USER',
       ]);
+
       return okPacket.insertId;
     } catch (err) {
       console.log(err);

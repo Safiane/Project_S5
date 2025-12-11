@@ -274,9 +274,15 @@ async function loadData () {
   error.value = ''
   try {
     const [sRes, alRes, aRes] = await Promise.all([
-      fetch(`${API_BASE}/songsapi/list`),
-      fetch(`${API_BASE}/albumsapi/list`),
-      fetch(`${API_BASE}/artistsapi/list`)
+      fetch(`${API_BASE}/songsapi/list`, {
+        credentials: 'include',           // <--
+      }),
+      fetch(`${API_BASE}/albumsapi/list`, {
+        credentials: 'include',           // <--
+      }),
+      fetch(`${API_BASE}/artistsapi/list`, {
+        credentials: 'include',           // <--
+      })
     ])
     if (!sRes.ok || !alRes.ok || !aRes.ok) {
       throw new Error(`HTTP ${sRes.status}/${alRes.status}/${aRes.status}`)
@@ -390,6 +396,7 @@ async function submitForm () {
     const res = await fetch(`${API_BASE}/songsapi/update/${id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',            // <--
       body: JSON.stringify(normalized)
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -422,7 +429,9 @@ function cancelEdit () {
 
 async function deleteSong (id) {
   try {
-    const res = await fetch(`${API_BASE}/songsapi/del/${id}`)
+    const res = await fetch(`${API_BASE}/songsapi/del/${id}`, {
+      credentials: 'include',            // <--
+    })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     await loadData()
     if (selectedSong.value && selectedSong.value.ID_Song === id) {

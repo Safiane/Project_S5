@@ -1,8 +1,8 @@
 // controllers/albumsapi.route.js
+
 const auth = require('../utils/users.auth');
 const express = require('express');
 const router = express.Router();
-
 const albumRepo = require('../utils/albums.repository');
 
 // GET list of albums
@@ -11,13 +11,13 @@ router.get('/list', albumListAction);
 // GET one album
 router.get('/show/:albumId', albumShowAction);
 
-// DELETE artist
+// DELETE album
 router.get('/del/:albumId', auth.authorizeRequest('ADMIN'), albumDelAction);
 
-// CREATE/UPDATE artist
+// CREATE/UPDATE album
 router.post('/update/:albumId', auth.authorizeRequest('ADMIN'), albumUpdateAction);
 
-// http://localhost:PORT/albumsapi/list
+// http://localhost:3000/albumsapi/list
 async function albumListAction(req, res) {
   const albums = await albumRepo.getAllAlbums();
   res.send(JSON.stringify(albums));
@@ -39,6 +39,7 @@ async function albumUpdateAction(req, res) {
   console.log(json);
 
   // TODO: validation
+
   let albumId = req.params.albumId;
 
   if (albumId === '0') {

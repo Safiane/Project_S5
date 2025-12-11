@@ -1,11 +1,14 @@
 // utils/albums.repository.js
+
 const pool = require(__dirname + '\\db.include.js');
 
 function normalizeDate(dateValue) {
   if (!dateValue) return null;
+
   if (typeof dateValue === 'string' && dateValue.includes('T')) {
     return dateValue.split('T')[0];
   }
+
   return dateValue;
 }
 

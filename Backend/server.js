@@ -8,6 +8,8 @@ dotenv.config();
 const express = require('express');
 const app = express();
 
+console.log('SERVER.JS CHARGE');
+
 // 3. Lancer le serveur
 app.listen(process.env.WEB_PORT, '0.0.0.0', () => {
   console.log('Listening on ' + process.env.WEB_PORT);

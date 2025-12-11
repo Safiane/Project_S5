@@ -234,3 +234,43 @@ INSERT INTO Song (Song_Title, Song_Release_Date, Duration, Language, Nb_Listenin
 ('STOP TRYING TO BE GOD', '2018-08-03', '00:05:38', 'English', 9000000, 20),
 ('YOSEMITE', '2018-08-03', '00:02:31', 'English', 8500000, 20),
 ('BUTTERFLY EFFECT', '2018-08-03', '00:03:11', 'English', 9500000, 20);
+
+-- ADMIN
+INSERT INTO users (user_name, user_email, user_pass, user_role)
+VALUES (
+  'admin',
+  'admin@example.com',
+  '$2b$12$E9j2WhR6IKXfB8FqFfr9/uExH8zsjmwG1Yd4enhCPuWwIzK2XR2MS',
+  'ADMIN'
+);
+
+-- USER
+INSERT INTO users (user_name, user_email, user_pass, user_role)
+VALUES (
+  'user',
+  'user@example.com',
+  '$2b$12$E9j2WhR6IKXfB8FqFfr9/uExH8zsjmwG1Yd4enhCPuWwIzK2XR2MS',
+  'USER'
+);
+
+SELECT user_id, user_name, user_pass, user_role
+FROM users;
+
+DELETE FROM users
+WHERE user_name NOT IN ('admin', 'user');
+
+UPDATE users SET user_pass = 'temp' WHERE user_name IN ('admin','user');
+
+UPDATE users
+SET user_pass = '$2b$10$tqApgzxetEfG8Br3Fy5Wz.JE675VM4RYHv6dbuSxiOdtS2gT8t5ke'
+WHERE user_name = 'admin';
+
+UPDATE users
+SET user_pass = '$2b$10$tqApgzxetEfG8Br3Fy5Wz.JE675VM4RYHv6dbuSxiOdtS2gT8t5ke'
+WHERE user_name = 'user';
+
+UPDATE users
+SET user_pass = '$2b$10$3gQ8lkmZKXDFJIEqigs.V.nsQ6v9HAqZZU/pOXOn80VZcfvpHbUja'
+WHERE user_name = 'Safiane';
+
+

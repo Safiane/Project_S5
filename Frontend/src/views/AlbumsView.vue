@@ -223,6 +223,10 @@
 
 
 <script setup>
+import { ref, onMounted, computed } from 'vue'
+
+const API_BASE = 'http://localhost:3000'
+
 const currentUser = ref(null)
 
 function loadCurrentUser () {
@@ -237,11 +241,6 @@ function loadCurrentUser () {
 const isAdmin = computed(() => currentUser.value?.role === 'ADMIN')
 
 loadCurrentUser()
-
-
-import { ref, onMounted, computed } from 'vue'
-
-const API_BASE = 'http://localhost:3000'
 
 const albums = ref([])
 const artists = ref([])
@@ -270,8 +269,12 @@ async function loadData () {
   error.value = ''
   try {
     const [alRes, arRes] = await Promise.all([
-      fetch(`${API_BASE}/albumsapi/list`),
-      fetch(`${API_BASE}/artistsapi/list`)
+      fetch(`${API_BASE}/albumsapi/list`, {
+        credentials: 'include',
+      }),
+      fetch(`${API_BASE}/artistsapi/list`, {
+        credentials: 'include',
+      })
     ])
     if (!alRes.ok || !arRes.ok) {
       throw new Error(`HTTP ${alRes.status}/${arRes.status}`)
@@ -320,6 +323,7 @@ async function submitForm () {
     const res = await fetch(`${API_BASE}/albumsapi/update/${id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(normalized)
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -337,7 +341,7 @@ function startEdit (alb) {
     ID_Album: alb.ID_Album,
     Album_Title: alb.Album_Title,
     Album_Release_Date: alb.Album_Release_Date
-      ? String(alb.Album_Release_Date).split('T')[0] // "2000-07-12"
+      ? String(alb.Album_Release_Date).split('T')[0]
       : '',
     Album_Type: alb.Album_Type,
     Record_Company: alb.Record_Company,
@@ -346,14 +350,15 @@ function startEdit (alb) {
   }
 }
 
-
 function cancelEdit () {
   resetForm()
 }
 
 async function deleteAlbum (id) {
   try {
-    const res = await fetch(`${API_BASE}/albumsapi/del/${id}`)
+    const res = await fetch(`${API_BASE}/albumsapi/del/${id}`, {
+      credentials: 'include',
+    })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     await loadData()
     if (selectedAlbum.value && selectedAlbum.value.ID_Album === id) {
@@ -365,7 +370,6 @@ async function deleteAlbum (id) {
     console.error(e)
   }
 }
-
 
 function viewDetails (alb) {
   selectedAlbum.value = { ...alb }
@@ -409,7 +413,7 @@ const sortedAlbums = computed(() => {
   })
 })
 
-function toggleSort(field) {
+function toggleSort (field) {
   if (sortBy.value === field) {
     sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
   } else {
@@ -417,8 +421,8 @@ function toggleSort(field) {
     sortDir.value = 'asc'
   }
 }
-
 </script>
+
 
 <style scoped>
 .page {
