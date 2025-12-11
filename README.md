@@ -133,7 +133,58 @@ gantt
 
   
 ```
-## End
+```mermaid
+gantt
+    title Timeline des commits (Oct 17 – Dec 11, 2025)
+    dateFormat  YYYY-MM-DD
+
+    %% OCTOBRE
+    section Oct 17 2025
+    Add_Frontend_Folder            :done, oct17_1, 2025-10-17, 1d
+    Update_README_Johnny_4         :done, oct17_2, 2025-10-17, 1d
+
+    section Oct 30 2025
+    Update_README_Johnny_3         :done, oct30_1, 2025-10-30, 1d
+
+    %% NOVEMBRE
+    section Nov 3 2025
+    Add_albums_songs_artists       :done, nov3_1, 2025-11-03, 1d
+    Upload_Files_Remove_PDF        :done, nov3_2, 2025-11-03, 1d
+
+    section Nov 20 2025
+    Server_Skeleton_Glatinor       :done, nov20_1, 2025-11-20, 1d
+
+    section Nov 21 2025
+    ServerJS_Update_Safiane        :done, nov21_1, 2025-11-21, 1d
+    CRUD_v2_Safiane                :done, nov21_2, 2025-11-21, 1d
+    Update_Diagram_Glatinor        :done, nov21_3, 2025-11-21, 1d
+
+    section Nov 27 2025
+    API_Cleanup_Glatinor           :done, nov27_1, 2025-11-27, 1d
+    Resolve_Conflicts_Glatinor     :done, nov27_2, 2025-11-27, 1d
+
+    section Nov 28 2025
+    Frontend_Backend_CRUD_Safiane  :done, nov28_1, 2025-11-28, 1d
+    Push_PDF_Glatinor              :done, nov28_2, 2025-11-28, 1d
+    Resolve_Backend_Merge_Safiane  :done, nov28_3, 2025-11-28, 1d
+
+    %% DÉCEMBRE
+    section Dec 5 2025
+    Modified_PDF_Glatinor          :done, dec5_1, 2025-12-05, 1d
+    Backend_Merge_CRUD_Safiane     :done, dec5_2, 2025-12-05, 1d
+    Update_README_Johnny_2         :done, dec5_3, 2025-12-05, 1d
+
+    section Dec 6 2025
+    Cleanup_Frontend_Merges_Safiane:done, dec6_1, 2025-12-06, 1d
+
+    section Dec 7 2025
+    Auth_Register_LoginView_Safiane:done, dec7_1, 2025-12-07, 1d
+
+    section Dec 11 2025
+    Update_README_Johnny           :done, dec11_1, 2025-12-11, 
+    Modif_home_Glatinor            :done, dec11_2, 2025-12-11, 
+    Fix_auth_CRUD_Safiane          :done, dec11_3, 2025-12-11, 
+```
 
 Thank you for taking the time to read this, and enjoy using our project!
 
