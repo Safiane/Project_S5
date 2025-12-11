@@ -129,11 +129,9 @@ gantt
 
     %% WEEK 14
     section Week14
-    crosstestsAll (Peio/Safiane/Johnny) :w14_all, 2025-11-28, 5d
+    Test (Peio/Safiane/Johnny) :w14_all, 2025-11-28, 5d
 
-    %% WEEK 15
-    section Week15
-    finalstabilizationAll (Peio/Safiane/Johnny) :w15_all, 2025-12-05, 8d
+  
 ```
 ## End
 
