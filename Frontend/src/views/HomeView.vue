@@ -41,7 +41,7 @@
     <section class="bottom-strip">
       <div class="now-playing">
         <span class="dot"></span>
-        <span class="label">Project S5 · MusicWorld</span>
+        <span class="label">Project S5 · Sonity</span>
       </div>
       <div class="credits">
         Made by Peïo, Safiane and Johnny
